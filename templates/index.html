@@ -4,24 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verkehrszeichen</title>
-    <style>
-        body { text-align: center; font-family: Arial, sans-serif; }
-        img { width: 300px; margin-top: 20px; }
-    </style>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body>
-    <h1>Aktuelles Verkehrszeichen</h1>
-    <img id="sign" src="{{ sign }}.png" alt="Verkehrszeichen">
+    <h1>Aktuelles Verkehrszeichen: <span id="sign">Unklar</span></h1>
     
-    <script>
-        function updateSign() {
-            fetch("/")
-            .then(response => response.text())
-            .then(html => {
-                document.body.innerHTML = html;
-            });
-        }
-        setInterval(updateSign, 2000);
+    <script type="text/javascript">
+        // WebSocket-Verbindung herstellen
+        var socket = io();
+
+        // Nachricht vom Server empfangen und das Verkehrszeichen aktualisieren
+        socket.on('update_sign', function(data) {
+            document.getElementById('sign').textContent = data.sign;
+        });
     </script>
 </body>
 </html>
