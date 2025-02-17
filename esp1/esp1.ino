@@ -6,8 +6,7 @@ const char* ssid = "Gravity";
 const char* password = "joulian_.";
 
 // URL des Servers
-const String serverUrl = "http://localhost:5000/update";  // Ersetze localhost durch die IP-Adresse des Servers, wenn du es von einem anderen Gerät verwendest
-
+const String serverUrl = "http://172.20.10.4:5000/update";
 void setup() {
   // Serielle Verbindung starten
   Serial.begin(115200);
