@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verkehrszeichen Website Template</title>
+
+    <style>
+        /* Allgemeine Styles und so */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            text-align: center;
+            user-select: none;
+        }
+
+        /* Obereleiste Stil yes */
+        .bar {
+            background-color: #001f3f;
+            color: white;
+            padding: 20px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        /* Menü Button yes */
+        .menu-button {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Dropdown Menü yes */
+        .dropdown-menu {
+            display: block;
+            position: absolute;
+            top: 60px;
+            left: 10px;
+            background-color: #003366; /* Dunkleres Blau */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+            width: 100px;
+        }
+
+        .dropdown-menu.open {
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        .dropdown-menu button {
+            width: 100%;
+            padding: 5px 10px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            outline: none;
+            font-size: 16px;
+            color: white; /* Weißer Text */
+        }
+
+        /* Hover-Effekt für Buttons  weil cool */
+        .dropdown-menu button:hover {
+            background-color: #005288; /* Noch dunklerer Blau-Ton */
+            padding: 8px 10px;
+        }
+
+        /* Inhaltbereich */
+        .content {
+            padding: 20px;
+            flex-grow: 1;
+            user-select: none;
+            min-height: 800px;
+        }
+
+        /* Rechteck weil Keine Bild diese */
+        .rectangle {
+            width: 50%;
+            height: 400px;
+            background-color: transparent;
+            border: 2px solid #001f3f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #001f3f;
+            margin: auto;
+        }
+
+        /* Untere Leiste yes */
+        .bottom-bar {
+            background-color: #001f3f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-top: auto;
+            user-select: none;
+        }
+
+        /* Stil für den zusätzlichen Text unter dem Rechteck */
+        .info-text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Obereleiste mit Menü type shi-->
+    <div class="bar">
+        <button class="menu-button">☰</button>
+        <div class="dropdown-menu">
+            <button>Home</button>
+            <button>Button 1</button>
+            <button>Button 2</button>
+            <button>Button 3</button>
+        </div>
+        Dynamische Verkehrszeichen
+    </div>
+
+    <!-- Hauptinhalt -->
+    <div class="content">
+        <div class="rectangle">
+            Hier Diese Bild und so
+        </div>
+        <!-- Zusätzlicher Text unter dem Rechteck -->
+        <div class="info-text">
+            Hier kommt später weitere Info über Projekt
+        </div>
+    </div>
+
+    <!-- Untere Leiste type shi -->
+    <div class="bottom-bar">
+        &copy; 2025 Konrad Solecki | Cezar-Andrei Iosif-Petrescu | David Jovanovic
+    </div>
+
+    <!-- JavaScript für Dropdown damit funktionation-->
+    <script>
+        document.querySelector(".menu-button").addEventListener("click", function () {
+            let menu = document.querySelector(".dropdown-menu");
+            menu.classList.toggle("open");
+        });
+    </script>
+
+</body>
+
+</html>
