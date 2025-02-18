@@ -6,13 +6,41 @@
     <title>Dynamische Website</title>
 </head>
 <body>
+    <script>
+        // Initialize WebSocket connection
+        const ws = new WebSocket('ws://localhost:5000/ws');
+        
+        ws.onmessage = function(event) {
+            const data = event.data;
+            console.log("Empfangene Nachricht:", data);
+            document.getElementById("signDisplay").innerText = data;
+        };
+
+        ws.onopen = function() {
+            console.log("WebSocket-Verbindung hergestellt");
+        };
+
+        ws.onerror = function(error) {
+            console.error("WebSocket-Fehler:", error);
+        };
+
+        ws.onclose = function() {
+            console.log("WebSocket-Verbindung geschlossen");
+        };
+    </script>
+
     <div id="main-page">
         <h2>Servus</h2>
+        <div id="signDisplay" style="margin: 20px; padding: 10px; border: 1px solid #ccc;">
+            Verkehrszeichen wird hier angezeigt
+        </div>
         <button>Home</button>
         <button>Wetter</button>
         <button>Verkehr</button>
-        <button onclick="window.location.href='kontrolle.html'">KONTROLLE</button>
-        <button onclick="window.location.href='VERKEHRSZEICHEN.html'">VERKEHRSZEICHEN</button>
+        <button onclick="window.location.href='/kontrolle'">KONTROLLE</button>
+        <button onclick="window.location.href='/verkehrszeichen'">VERKEHRSZEICHEN</button>
+
+
     </div>
 </body>
 </html>

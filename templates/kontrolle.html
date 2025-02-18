@@ -4,12 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KONTROLLE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        function updateSign(sign) {
+            fetch("/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "sign=" + sign
+            }).then(response => {
+                if (response.ok) {
+                    console.log("Verkehrszeichen geändert:", sign);
+                }
+            });
+        }
+    </script>
 </head>
 <body>
     <h2>Kontrollseite</h2>
-    <button onclick="window.location.href='main.html'">MAIN</button>
-    
+    <button onclick="window.location.href='/main'">MAIN</button>
 
-    
+    <button onclick="updateSign('STOP')">STOP</button>
+    <button onclick="updateSign('Geschwindigkeit 50')">50 km/h</button>
+    <button onclick="updateSign('Achtung Baustelle')">Baustelle</button>
+    <button onclick="updateSign('Freie Fahrt')">Freie Fahrt</button>
 </body>
 </html>

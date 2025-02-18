@@ -8,23 +8,19 @@
 <body>
     <div id="login-page">
         <h2>LOGIN</h2>
-        <input type="text" id="username" placeholder="Benutzername">
-        <input type="password" id="password" placeholder="Passwort">
-        <button onclick="checkLogin()">Login</button>
+        <form method="POST" action="/">
+        <input type="text" name="username" id="username" placeholder="Benutzername" required autocomplete="username">
+        <input type="password" name="password" id="password" placeholder="Passwort" required autocomplete="current-password">
+
+            <button type="submit">Login</button>
+        </form>
     </div>
 
+    {% if error %}
     <script>
-        function checkLogin() {
-            var username = document.getElementById("username").value;
-            var password = document.getElementById("password").value;
-
-            if (username === "123" && password === "123") {
-                
-                window.location.href = "main.html";
-            } else {
-                alert("Falscher Benutzername oder Passwort");
-            }
-        }
+        alert("Falscher Benutzername oder Passwort");
     </script>
+    {% endif %}
+
 </body>
 </html>

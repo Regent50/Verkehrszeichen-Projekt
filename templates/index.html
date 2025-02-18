@@ -4,19 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verkehrszeichen</title>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body>
+<script>
+    // Initialize WebSocket connection
+    const ws = new WebSocket('ws://localhost:5000/ws');
+
+    ws.onopen = function() {
+        console.log("WebSocket-Verbindung hergestellt");
+    };
+
+    ws.onerror = function(error) {
+        console.error("WebSocket-Fehler:", error);
+    };
+
+    ws.onclose = function() {
+        console.log("WebSocket-Verbindung geschlossen");
+    };
+</script>
+
     <h1>Aktuelles Verkehrszeichen: <span id="sign">Unklar</span></h1>
     
     <script type="text/javascript">
-        // WebSocket-Verbindung herstellen
-        var socket = io();
-
-        // Nachricht vom Server empfangen und das Verkehrszeichen aktualisieren
-        socket.on('update_sign', function(data) {
-            document.getElementById('sign').textContent = data.sign;
-        });
+        // Handle WebSocket messages
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'update') {
+                console.log("Verkehrszeichen geändert:", data.sign);
+                document.getElementById('sign').textContent = data.sign;
+            }
+        };
     </script>
+
 </body>
 </html>
