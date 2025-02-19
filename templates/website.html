@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamische Website</title>
+    <title>Verkehrszeichen Website Template</title>
+
     <style>
         /* Allgemeine Styles und so */
         body {
@@ -124,52 +126,34 @@
         }
     </style>
 </head>
+
 <body>
-    <script>
-        // Initialize WebSocket connection
-        const ws = new WebSocket('ws://localhost:5000/ws');
-        
-        ws.onmessage = function(event) {
-            const data = event.data;
-            console.log("Empfangene Nachricht:", data);
-            document.getElementById("signDisplay").innerText = data;
-        };
 
-        ws.onopen = function() {
-            console.log("WebSocket-Verbindung hergestellt");
-        };
-
-        ws.onerror = function(error) {
-            console.error("WebSocket-Fehler:", error);
-        };
-
-        ws.onclose = function() {
-            console.log("WebSocket-Verbindung geschlossen");
-        };
-    </script>
-
-<div class="bar">
-    <button class="menu-button">☰</button>
-    <div class="dropdown-menu">
-        <button>Home</button>
-        <button onclick="window.location.href='/kontrolle'">KONTROLLE</button>
-        <button onclick="window.location.href='/verkehrszeichen'">VERKEHRSZEICHEN</button>
-        <button>Button 3</button>
+    <!-- Obereleiste mit Menü type shi-->
+    <div class="bar">
+        <button class="menu-button">☰</button>
+        <div class="dropdown-menu">
+            <button>Home</button>
+            <button>Button 1</button>
+            <button>Button 2</button>
+            <button>Button 3</button>
+        </div>
+        Dynamische Verkehrszeichen
     </div>
-<!--Hauptinhalt-->
+
+    <!-- Hauptinhalt -->
     <div class="content">
         <div class="rectangle">
             Hier Diese Bild und so
         </div>
-
         <!-- Zusätzlicher Text unter dem Rechteck -->
         <div class="info-text">
             Hier kommt später weitere Info über Projekt
         </div>
     </div>
-    
-     <!-- Untere Leiste type shi -->
-     <div class="bottom-bar">
+
+    <!-- Untere Leiste type shi -->
+    <div class="bottom-bar">
         &copy; 2025 Konrad Solecki | Cezar-Andrei Iosif-Petrescu | David Jovanovic
     </div>
 
@@ -180,5 +164,7 @@
             menu.classList.toggle("open");
         });
     </script>
+
 </body>
+
 </html>
