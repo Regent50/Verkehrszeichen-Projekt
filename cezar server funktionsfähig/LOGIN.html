@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamische Website</title>
+</head>
+<body>
+    <div id="login-page">
+        <h2>LOGIN</h2>
+        <form method="POST" action="/">
+        <input type="text" name="username" id="username" placeholder="Benutzername" required autocomplete="username">
+        <input type="password" name="password" id="password" placeholder="Passwort" required autocomplete="current-password">
+
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    {% if error %}
+    <script>
+        alert("Falscher Benutzername oder Passwort");
+    </script>
+    {% endif %}
+
+</body>
+</html>

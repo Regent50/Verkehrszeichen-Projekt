@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamische Website </title>
+    <title>Verkehrszeichen Website Template</title>
+
     <style>
+        /* Allgemeine Styles und so */
         body {
             margin: 0;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Arial', sans-serif; 
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             text-align: center;
             user-select: none;
         }
+
+        /* Obereleiste Stil yes */
         .bar {
             background-color: #001f3f;
             color: white;
@@ -25,8 +30,9 @@
             font-size: 28px;
             font-weight: bold;
             letter-spacing: 2px;
-            flex-direction: column;
         }
+
+        /* Menü Button yes */
         .menu-button {
             position: absolute;
             left: 10px;
@@ -39,43 +45,55 @@
             cursor: pointer;
             outline: none;
         }
+
+        /* Dropdown Menü yes */
         .dropdown-menu {
             display: block;
             position: absolute;
             top: 60px;
             left: 10px;
-            background-color: #003366;
+            background-color: #003366; /* Dunkleres Blau */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             max-height: 0;
             overflow: hidden;
             opacity: 0;
             transition: max-height 0.5s ease, opacity 0.3s ease;
-            width: 155px;
+            width: 100px;
         }
+
         .dropdown-menu.open {
             max-height: 300px;
             opacity: 1;
         }
+
         .dropdown-menu button {
             width: 100%;
-            padding: 8px 10px;
+            padding: 5px 10px;
             border: none;
             background: none;
             text-align: left;
             cursor: pointer;
             outline: none;
             font-size: 16px;
-            color: white;
+            color: white; /* Weißer Text */
         }
+
+        /* Hover-Effekt für Buttons  weil cool */
         .dropdown-menu button:hover {
-            background-color: #005288;
+            background-color: #005288; /* Noch dunklerer Blau-Ton */
+            padding: 8px 10px;
         }
+
+        /* Inhaltbereich */
         .content {
-            padding: 10px;
+            padding: 20px;
             flex-grow: 1;
+            user-select: none;
             min-height: 800px;
         }
+
+        /* Rechteck weil Keine Bild diese */
         .rectangle {
             width: 50%;
             height: 400px;
@@ -89,12 +107,18 @@
             color: #001f3f;
             margin: auto;
         }
+
+        /* Untere Leiste yes */
         .bottom-bar {
             background-color: #001f3f;
             color: white;
-            padding: 60px;
+            padding: 20px;
             text-align: center;
+            margin-top: auto;
+            user-select: none;
         }
+
+        /* Stil für den zusätzlichen Text unter dem Rechteck */
         .info-text {
             margin-top: 20px;
             font-size: 18px;
@@ -102,86 +126,45 @@
         }
     </style>
 </head>
+
 <body>
+
+    <!-- Obereleiste mit Menü type shi-->
     <div class="bar">
         <button class="menu-button">☰</button>
-        <h1 style="margin: 0; font-size: 24px;">Dynamisches Verkehrszeichen</h1>
         <div class="dropdown-menu">
             <button>Home</button>
-            <button onclick="window.location.href='/kontrolle'">KONTROLLE</button>
-            <button onclick="window.location.href='/verkehrszeichen'">VERKEHRSZEICHEN</button>
+            <button>Button 1</button>
+            <button>Button 2</button>
             <button>Button 3</button>
         </div>
+        Dynamische Verkehrszeichen
     </div>
-    <div class="content">
-        <div class="rectangle" id="signDisplay">
-            Hier Diese Bild und so
-        </div>
-        <div class="info-text">
-            Hier kommt später weitere Info über Projekt
-        </div>
-    </div>
-    <div class="bottom-bar">
-        &copy; 2025 Konrad Solecki | Cezar-Andrei Iosif-Petrescu | David Jovanovic
-    </div>
-    <script>
-        const ws = new WebSocket('ws://localhost:5000/ws');
-        ws.onmessage = function(event) {
-            const data = event.data;
-            console.log("Empfangene Nachricht:", data);
-            document.getElementById("signDisplay").innerText = data;
-        };
-        ws.onopen = function() {
-            console.log("WebSocket-Verbindung hergestellt");
-        };
-        ws.onerror = function(error) {
-            console.error("WebSocket-Fehler:", error);
-        };
-        ws.onclose = function() {
-            console.log("WebSocket-Verbindung geschlossen");
-        };
-<<<<<<< Updated upstream
-=======
-    </script>
 
-<div class="bar">
-    <button class="menu-button">☰</button>
-    <div class="dropdown-menu">
-        <button onclick="window.location.href='/main'">Home</button>
-        <button onclick="window.location.href='/kontrolle'">KONTROLLE</button>
-        <button onclick="window.location.href='/verkehrszeichen'">VERKEHRSZEICHEN</button>
-        <button>Button 3</button>
-    </div>
-<!--Hauptinhalt-->
+    <!-- Hauptinhalt -->
     <div class="content">
         <div class="rectangle">
             Hier Diese Bild und so
         </div>
-
         <!-- Zusätzlicher Text unter dem Rechteck -->
         <div class="info-text">
             Hier kommt später weitere Info über Projekt
         </div>
     </div>
 
-     <!-- Untere Leiste type shi -->
-     <div class="bottom-bar">
+    <!-- Untere Leiste type shi -->
+    <div class="bottom-bar">
         &copy; 2025 Konrad Solecki | Cezar-Andrei Iosif-Petrescu | David Jovanovic
     </div>
 
     <!-- JavaScript für Dropdown damit funktionation-->
     <script>
->>>>>>> Stashed changes
         document.querySelector(".menu-button").addEventListener("click", function () {
             let menu = document.querySelector(".dropdown-menu");
             menu.classList.toggle("open");
         });
-        document.addEventListener("click", function(event) {
-            let menu = document.querySelector(".dropdown-menu");
-            if (!event.target.closest(".menu-button") && !event.target.closest(".dropdown-menu")) {
-                menu.classList.remove("open");
-            }
-        });
     </script>
+
 </body>
+
 </html>

@@ -105,6 +105,7 @@
     </script>
 </head>
 <body>
+<<<<<<< Updated upstream
     <div class="bar">
         <button class="main-button" onclick="window.location.href='/main'">MAIN</button> <!-- MAIN Button in der linken oberen Ecke der Bar -->
         <h1 style="margin: 0; font-size: 24px;">Kontrollseite</h1>
@@ -120,6 +121,18 @@
     <div class="bottom-bar">
         &copy; 2025 Konrad Solecki | Cezar-Andrei Iosif-Petrescu | David Jovanovic
     </div>
+=======
+    <h2>Kontrollseite</h2>
+    <div class="bar">
+        <button class="menu-button">☰</button>
+        <div class="dropdown-menu">
+            <button onclick="window.location.href='/main'">Home</button>
+            <button onclick="window.location.href='/kontrolle'">KONTROLLE</button>
+            <button onclick="window.location.href='/verkehrszeichen'">VERKEHRSZEICHEN</button>
+            <button>Button 3</button>
+        </div>
+    <button onclick="window.location.href='/main'">MAIN</button>
+>>>>>>> Stashed changes
 
     <script>
         const ws = new WebSocket('ws://localhost:5000/ws');

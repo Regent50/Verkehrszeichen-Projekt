@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verkehrszeichen</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        socket.on("update_sign", function(data) {
+            console.log("Neues Verkehrszeichen:", data.sign);
+            var textDisplay = document.getElementById("signText");
+            var imageDisplay = document.getElementById("signImage");
+
+            textDisplay.innerText = data.sign;
+
+            // Bildquelle basierend auf Verkehrszeichen setzen
+            var signImages = {
+                "STOP": "/static/signs/stop_schild.png",
+                "Geschwindigkeit 50": "/static/signs/50kmh_schild.png",
+                "Achtung Baustelle": "/static/signs/baustelle_schild.png",
+                "Freie Fahrt": "/static/signs/freifahrt_schild.png"
+            };
+
+            if (signImages[data.sign]) {
+                imageDisplay.src = signImages[data.sign];
+                imageDisplay.style.display = "block"; // Bild anzeigen
+            } else {
+                imageDisplay.style.display = "none"; // Bild verstecken, falls kein passendes Bild existiert
+            }
+        });
+    </script>
+</head>
+<body>
+    <h2>Aktuelles Verkehrszeichen</h2>
+    <div id="signText">Kein Verkehrszeichen</div>
+    
+    <img id="signImage" src="" style="display:none; width:200px; height:auto;" alt="Verkehrszeichen">
+</body>
+</html>
