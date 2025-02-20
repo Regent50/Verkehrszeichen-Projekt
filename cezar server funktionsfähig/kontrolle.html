@@ -4,10 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KONTROLLE</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            text-align: center;
+            user-select: none;
+        }
+        .bar {
+            background-color: #001f3f;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            flex-direction: column;
+            position: relative;
+        }
+        .content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            width: 300px;
+        }
+        .button-container button {
+            padding: 15px;
+            font-size: 18px;
+            color: white;
+            background-color: #001f3f;
+            border: 2px solid #001f3f;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%;
+        }
+        .button-container button:hover {
+            background-color: #005288;
+            transform: translateY(-3px);
+        }
+        .bottom-bar {
+            background-color: #001f3f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .info-text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        .main-button {
+            position: absolute;
+            left: 20px; /* Button mehr nach links verschoben */
+            top: 50%; /* Button vertikal mittig auf der oberen Leiste */
+            transform: translateY(-50%); /* Damit der Button genau mittig ist */
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #001f3f;
+            border: 2px solid #001f3f;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .main-button:hover {
+            background-color: #005288;
+            border-color: #005288;
+        }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
     <script>
         var socket = io();
-
         function updateSign(sign) {
             fetch("/update", {
                 method: "POST",
@@ -22,20 +104,37 @@
     </script>
 </head>
 <body>
-    <h2>Kontrollseite</h2>
     <div class="bar">
-        <button class="menu-button">☰</button>
-        <div class="dropdown-menu">
-            <button onclick="window.location.href='/main'">Home</button>
-            <button onclick="window.location.href='/kontrolle'">KONTROLLE</button>
-            <button onclick="window.location.href='/verkehrszeichen'">VERKEHRSZEICHEN</button>
-            <button>Button 3</button>
+        <button class="main-button" onclick="window.location.href='/main'">MAIN</button>
+        <h1 style="margin: 0; font-size: 24px;">Kontrollseite</h1>
+    </div>
+    <div class="content">
+        <div class="button-container">
+            <button onclick="updateSign('STOP')">STOP</button>
+            <button onclick="updateSign('Geschwindigkeit 50')">50 km/h</button>
+            <button onclick="updateSign('Achtung Baustelle')">Baustelle</button>
+            <button onclick="updateSign('Freie Fahrt')">Freie Fahrt</button>
         </div>
-    <button onclick="window.location.href='/main'">MAIN</button>
-
-    <button onclick="updateSign('STOP')">STOP</button>
-    <button onclick="updateSign('Geschwindigkeit 50')">50 km/h</button>
-    <button onclick="updateSign('Achtung Baustelle')">Baustelle</button>
-    <button onclick="updateSign('Freie Fahrt')">Freie Fahrt</button>
+    </div>
+    <div class="bottom-bar">
+        &copy; 2025 Konrad Solecki | Cezar-Andrei Iosif-Petrescu | David Jovanovic
+    </div>
+    <script>
+        const ws = new WebSocket('ws://localhost:5000/ws');
+        ws.onmessage = function(event) {
+            const data = event.data;
+            console.log("Empfangene Nachricht:", data);
+            document.getElementById("signDisplay").innerText = data;
+        };
+        ws.onopen = function() {
+            console.log("WebSocket-Verbindung hergestellt");
+        };
+        ws.onerror = function(error) {
+            console.error("WebSocket-Fehler:", error);
+        };
+        ws.onclose = function() {
+            console.log("WebSocket-Verbindung geschlossen");
+        };
+    </script>
 </body>
 </html>
