@@ -1,15 +1,15 @@
-
 # **Dynamische Verkehrszeichen mit Wetterdaten und ESP32 Steuerung**
 
-Dieses Projekt ermöglicht es, ein **dynamisches Verkehrszeichen** mit Wetterdaten und anderen Sensoren zu steuern. Es basiert auf einem **Flask Webserver**, der über **WebSockets** eine Echtzeitkommunikation mit einem **ESP32** verwendet, um das Verkehrszeichen zu steuern.
+Dieses Projekt ermöglicht es, ein **dynamisches Verkehrszeichen** mit Wetterdaten und anderen Sensoren zu steuern. Es basiert auf einem **Flask Webserver**, der über **WebSockets** eine Echtzeitkommunikation mit mehreren **ESP32** verwendet, um das Verkehrszeichen zu steuern.
 
 ## **Verwendete Technologien:**
 
 - **Flask**: Ein leichtgewichtiges Python Webframework, das für den Server zuständig ist.
 - **Flask-SocketIO**: Ermöglicht die Echtzeit-Kommunikation über WebSockets zwischen Server und Browser.
 - **ESP32**: Mikrocontroller, der die Verbindung zum Server und zu den Sensoren herstellt.
-- **LoRa**: Kommunikationstechnologie, die für die Verbindung zwischen ESP32 und anderen Geräten verwendet wird.
+- **LoRa**: Kommunikationstechnologie, die für die Verbindung zwischen mehreren ESP32-Geräten verwendet wird.
 - **HTML / JavaScript**: Für die Frontend-Webseite, die das Verkehrszeichen visualisiert und in Echtzeit aktualisiert wird.
+- **VGA-Ansteuerung**: Ein zweiter ESP32 mit Displaycontroller zur Anzeige des Verkehrszeichens auf einem normalen VGA-Monitor.
 
 ---
 
@@ -23,6 +23,7 @@ Stelle sicher, dass du folgende Programme installiert hast:
 - **Pip** (Python Package Installer): Wird normalerweise zusammen mit Python installiert.
 - **Flask** und **Flask-SocketIO** für den Webserver.
 - **Visual Studio Code** oder einen anderen Code-Editor.
+- **Arduino IDE** mit ESP32-Unterstützung zur Programmierung der Mikrocontroller.
 
 ### **2. Abhängigkeiten installieren:**
 
@@ -59,18 +60,18 @@ Verkehrszeichen/
 ├── server.py                # Haupt-Python-Datei für den Flask-Server
 ├── templates/
 │   └── index.html           # HTML-Datei für das Frontend der Webseite
+├── esp32_controller/        # ESP32 Code für den ersten Controller
+│   └── main.ino             # Steuerung und Kommunikation mit dem Server
+├── esp32_display/           # ESP32 Code für den zweiten Controller mit Display
+│   └── display.ino          # VGA-Signalsteuerung für Verkehrszeichen
 ├── requirements.txt         # Listet alle Python-Abhängigkeiten auf
 └── README.md                # Diese Datei
 ```
 
-### **Server-Code (`server.py`)**
+### **ESP32 Kommunikation:**
 
-- Der Flask-Server empfängt POST-Anfragen und sendet die Daten an alle verbundenen Webclients.
-- Über **WebSockets** wird das Verkehrszeichen auf der Webseite automatisch aktualisiert, sobald der Server eine Änderung erhält.
-
-### **Frontend (`index.html`)**
-
-- Diese HTML-Datei zeigt das aktuelle Verkehrszeichen an und aktualisiert sich automatisch, wenn der Server eine Änderung über WebSockets sendet.
+- **ESP32 (Controller 1):** Verbindet sich mit dem Server und sendet Updates basierend auf Sensordaten oder externen Befehlen.
+- **ESP32 (Controller 2 - Displayeinheit):** Empfangt Befehle über WebSockets oder eine direkte ESP32-zu-ESP32-Kommunikation und zeigt das Verkehrszeichen auf einem VGA-Monitor an.
 
 ---
 
@@ -85,30 +86,33 @@ Verkehrszeichen/
 Du kannst das Verkehrszeichen über eine POST-Anfrage ändern. Zum Beispiel:
 
 ```sh
-curl -X POST -d "sign=sperre" http://localhost:5000/update
+curl -X POST -d "sign=sperre" http://192.168.1.100:5000/update
 ```
 
-Wenn du dies tust, wird das Verkehrszeichen auf der Webseite in Echtzeit auf "Sperre" geändert.
+Der ESP32 empfängt das Signal und sendet es weiter an den zweiten ESP32, der das Bild entsprechend auf dem Monitor anzeigt.
 
-### **WebSocket-Update:**
+### **ESP32-zu-ESP32 Kommunikation:**
 
-Jedes Mal, wenn der Server eine Änderung der Verkehrszeichen-Daten empfängt, wird er alle verbundenen Clients (Webbrowser) benachrichtigen und das Verkehrszeichen auf der Webseite automatisch aktualisieren.
+Der erste ESP32 sendet das aktualisierte Verkehrszeichen per **LoRa** oder über **Wi-Fi** direkt an den zweiten ESP32, der den Bildschirm ansteuert. Das geschieht entweder über eine einfache HTTP-Anfrage oder über ein WebSocket-Protokoll.
 
 ---
 
 ## **Fehlerbehebung**
 
-- Wenn du beim Starten des Servers eine Fehlermeldung bekommst, stelle sicher, dass alle Abhängigkeiten korrekt installiert sind und dass der Server mit der richtigen Version von Python läuft.
-- Achte darauf, dass der Port `5000` nicht von einer anderen Anwendung blockiert wird.
+- Falls der ESP32 nicht mit dem Server kommunizieren kann, überprüfe, ob die richtige IP-Adresse verwendet wird.
+- Falls der VGA-Monitor keine Anzeige hat, stelle sicher, dass der zweite ESP32 mit einem kompatiblen **VGA-Adapter** verbunden ist.
+- Falls der Webserver nicht startet, überprüfe, ob alle Abhängigkeiten korrekt installiert wurden.
 
 ---
 
 ## **Zukünftige Erweiterungen:**
 
 - **Sensorintegration**: Das System kann erweitert werden, um Wetterdaten und Sensordaten (z. B. Temperatur, Luftfeuchtigkeit) zu berücksichtigen, um die Verkehrszeichen automatisch zu ändern.
-- **ESP32-Integration**: Der ESP32 kann für die tatsächliche Steuerung von physischen Verkehrszeichen (z. B. LEDs oder Bildschirmen) verwendet werden.
+- **Verbesserte Anzeige**: Nutzung eines hochwertigen LCDs anstelle eines VGA-Monitors.
+- **Erweiterte Steuerung**: Möglichkeit, Verkehrszeichen über eine mobile App zu ändern.
 - **Datenbankintegration**: Die gespeicherten Verkehrsdaten könnten in einer Datenbank gespeichert werden, um ein langfristiges Monitoring zu ermöglichen.
 
 ---
 
 ### **Vielen Dank für deinen Besuch!** 😊
+
