@@ -7,14 +7,24 @@ Dieses Projekt ermöglicht es, ein **dynamisches Verkehrszeichen** mit Wetterdat
 - **Flask**: Ein leichtgewichtiges Python Webframework, das für den Server zuständig ist.
 - **Flask-SocketIO**: Ermöglicht die Echtzeit-Kommunikation über WebSockets zwischen Server und Browser.
 - **ESP32**: Mikrocontroller, der die Verbindung zum Server und zu den Sensoren herstellt.
-- **LoRa**: Kommunikationstechnologie, die für die Verbindung zwischen mehreren ESP32-Geräten verwendet wird.
 - **HTML / JavaScript**: Für die Frontend-Webseite, die das Verkehrszeichen visualisiert und in Echtzeit aktualisiert wird.
-- **VGA-Ansteuerung**: Ein zweiter ESP32 mit Displaycontroller zur Anzeige des Verkehrszeichens auf einem normalen VGA-Monitor.
+- **VGA-Ansteuerung**: Der ESP32 mit Displaycontroller zur Anzeige des Verkehrszeichens auf einem normalen VGA-Monitor.
 
 ---
 
-## **Installation und Setup**
+## **Deployment Options**
 
+### **Local Development:**
+The server can be run on your local machine for development and testing.
+
+### **Raspberry Pi 3 Deployment:**
+The server runs perfectly on Raspberry Pi 3, making it ideal for production deployments. The lightweight Flask server is well-suited for the Pi's resources.
+
+### **Online Accessibility:**
+The server can be accessed online anytime using port forwarding or a tunneling service ngrok, allowing remote control and monitoring of the traffic signs.
+
+## **Installation und Setup**
+Simple Setup through the ngrok interface via HTTP
 ### **1. Benötigte Software:**
 
 Stelle sicher, dass du folgende Programme installiert hast:
@@ -38,17 +48,19 @@ Erstelle eine `requirements.txt`-Datei im Projektordner mit den folgenden Inhalt
 ```
 Flask==2.1.1
 Flask-SocketIO==5.2.0
+Pillow==6.2.0
 ```
 
 ### **3. Webserver starten:**
 
-Führe den folgenden Befehl aus, um den Webserver zu starten:
+Der Server kann auf verschiedenen Plattformen ausgeführt werden, einschließlich Raspberry Pi 3. Führe den folgenden Befehl aus, um den Webserver zu starten:
 
 ```sh
 python server.py
 ```
 
-Der Server wird auf `http://localhost:5000` laufen. Die Webseite zeigt das dynamische Verkehrszeichen an.
+Der Server läuft standardmäßig auf `http://localhost:5000`, kann aber auch online über eine öffentliche IP-Adresse oder Domain zugänglich gemacht werden. Die Webseite zeigt das dynamische Verkehrszeichen an und ist jederzeit online verfügbar.
+
 
 ---
 
@@ -57,21 +69,63 @@ Der Server wird auf `http://localhost:5000` laufen. Die Webseite zeigt das dynam
 ```
 Verkehrszeichen/
 │
-├── server.py                # Haupt-Python-Datei für den Flask-Server
-├── templates/
-│   └── index.html           # HTML-Datei für das Frontend der Webseite
-├── esp32_controller/        # ESP32 Code für den ersten Controller
-│   └── main.ino             # Steuerung und Kommunikation mit dem Server
-├── esp32_display/           # ESP32 Code für den zweiten Controller mit Display
-│   └── display.ino          # VGA-Signalsteuerung für Verkehrszeichen
-├── requirements.txt         # Listet alle Python-Abhängigkeiten auf
-└── README.md                # Diese Datei
+├── arduino libraries/       # Arduino libraries for ESP32 communication
+├── cezar server funktionsfähig/  # Functional server templates and files
+│   ├── guest_verkehrszeichen.html
+│   ├── index.html
+│   ├── kontrolle.html
+│   ├── LOGIN.html
+│   ├── main_guest.html
+│   ├── main.html
+│   ├── VERKEHRSZEICHEN.html
+│   └── website.html
+├── esp1/                    # ESP32 VGA display controller code
+│   └── esp_VGA/
+│       ├── esp_VGA.ino      # Main ESP32 VGA controller code
+│       └── image_handler.h  # Image handling functions
+├── koni integration/       # Integration templates and files
+│   ├── index.html
+│   ├── kontrolle.html
+│   ├── LOGIN.html
+│   ├── MAIN_gast.html
+│   ├── MAIN.html
+│   ├── VERKEHRSZEICHEN.html
+│   ├── website_template.html
+│   └── website.html
+├── lib_test/               # Library test files
+│   └── espvgatest/
+│       └── espvgatest.ino   # ESP32 VGA test code
+├── static/                  # Static files for web server
+│   ├── script.js            # JavaScript for web interface
+│   ├── styles.css           # CSS styles for web interface
+│   └── signs/               # Traffic sign images
+│       ├── 50kmh_schild.png
+│       ├── baustelle_schild.png
+│       ├── freifahrt_schild.png
+│       └── stop_schild.png
+├── templates/              # Flask template files
+│   ├── guest_verkehrszeichen.html
+│   ├── index.html
+│   ├── kontrolle.html
+│   ├── LOGIN.html
+│   ├── main_guest.html
+│   ├── MAIN.html
+│   ├── VERKEHRSZEICHEN.html
+│   ├── website_template.html
+│   └── website.html
+├── .gitattributes           # Git attributes file
+├── .gitignore               # Git ignore file
+├── frame.png                # Example frame image
+├── ngrok.exe                # Ngrok executable for tunneling
+├── README.md                 # Project documentation
+├── requirements.txt          # Python dependencies
+├── server.py                 # Flask server main file
+└── vga_image_converter.py    # VGA image conversion utility
 ```
 
 ### **ESP32 Kommunikation:**
 
-- **ESP32 (Controller 1):** Verbindet sich mit dem Server und sendet Updates basierend auf Sensordaten oder externen Befehlen.
-- **ESP32 (Controller 2 - Displayeinheit):** Empfangt Befehle über WebSockets oder eine direkte ESP32-zu-ESP32-Kommunikation und zeigt das Verkehrszeichen auf einem VGA-Monitor an.
+- **ESP32 (Controller 2 - Displayeinheit):** Empfangt Befehle über WebSockets oder eine direkte Server-zu-ESP32-Kommunikation und zeigt das Verkehrszeichen auf einem VGA-Monitor an.
 
 ---
 
@@ -79,21 +133,21 @@ Verkehrszeichen/
 
 ### **Webseite anzeigen:**
 
-Öffne in deinem Webbrowser die URL `http://localhost:5000`. Du wirst die aktuelle Anzeige des Verkehrszeichens sehen. 
+Öffne in deinem Webbrowser die URL `http://localhost:5000` für lokalen Zugriff oder die öffentliche IP/Domain für den Online-Zugriff. Du wirst die aktuelle Anzeige des Verkehrszeichens sehen, die jederzeit online verfügbar ist.
 
 ### **Verkehrszeichen ändern:**
 
 Du kannst das Verkehrszeichen über eine POST-Anfrage ändern. Zum Beispiel:
 
 ```sh
-curl -X POST -d "sign=sperre" http://192.168.1.100:5000/update
+curl -X POST -d "sign=sperre" http://localhost:5000/update
 ```
 
 Der ESP32 empfängt das Signal und sendet es weiter an den zweiten ESP32, der das Bild entsprechend auf dem Monitor anzeigt.
 
 ### **ESP32-zu-ESP32 Kommunikation:**
 
-Der erste ESP32 sendet das aktualisierte Verkehrszeichen per **LoRa** oder über **Wi-Fi** direkt an den zweiten ESP32, der den Bildschirm ansteuert. Das geschieht entweder über eine einfache HTTP-Anfrage oder über ein WebSocket-Protokoll.
+Der erste ESP32/Server sendet das aktualisierte Verkehrszeichen per **LoRa (nicht intergriert)** oder über **Wi-Fi** direkt an den zweiten ESP32, der den Bildschirm ansteuert. Das geschieht entweder über eine einfache HTTP-Anfrage oder über ein WebSocket-Protokoll.
 
 ---
 
@@ -115,4 +169,3 @@ Der erste ESP32 sendet das aktualisierte Verkehrszeichen per **LoRa** oder über
 ---
 
 ### **Vielen Dank für deinen Besuch!** 😊
-

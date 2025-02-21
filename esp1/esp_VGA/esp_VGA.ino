@@ -5,15 +5,13 @@
 #include <VGA/VGA14Bit.h>
 #include "image_handler.h"
 #include <SocketIoClient.h>
-
-
-
+SocketIoClient socketIO; // Use SocketIoClient instead of SocketIOclient
 
 // WLAN-Zugangsdaten
 const char* ssid = "Gravity";
 const char* password = "joulian_.";
 
-// URL des Servers
+// Server URL
 const String serverUrl = "http://172.20.10.4:5000/update";
 
 // VGA instance and image handler
@@ -21,32 +19,24 @@ VGA14Bit vga;
 ImageHandler imageHandler(vga);
 
 // Socket.IO client
-SocketIOclient socketIO;
+void socketIOEvent(socketIOmessageType_t type, uint8_t *payload, size_t length);
 
 // Socket.IO event handler
 void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length) {
-  switch(type) {
-    case sIOtype_EVENT:
-      // Parse JSON payload
-      DynamicJsonDocument doc(1024);
-      DeserializationError error = deserializeJson(doc, payload, length);
-      if (!error) {
-        const char* event = doc[0];
-        if (strcmp(event, "update_sign") == 0) {
-          currentSign = doc[1].as<String>();
-          Serial.println("Sign updated via Socket.IO: " + currentSign);
-        }
+  if (type == sIOtype_EVENT) {
+    DynamicJsonDocument doc(1024);
+    DeserializationError error = deserializeJson(doc, payload, length);
+    if (!error) {
+      const char* event = doc[0];
+      if (strcmp(event, "update_sign") == 0) {
+        currentSign = doc[1].as<String>();
+        Serial.println("Sign updated via Socket.IO: " + currentSign);
       }
-      break;
-    default:
-      break;
+    }
   }
 }
 
-
-
-
-// VGA pins using ESP32Lib
+// ✅ Correct VGA pin configuration
 const int redPins[] = {13, 12, 14};
 const int greenPins[] = {27, 26, 25};
 const int bluePins[] = {33, 32, 15};
@@ -59,24 +49,22 @@ String currentSign = "";
 void setup() {
   Serial.begin(115200);
 
-  // Correct VGA initialization
+  // ✅ Correct VGA initialization
   vga.init(vga.MODE320x240, redPins, greenPins, bluePins, hsyncPin, vsyncPin);
   vga.clear(vga.RGB(0, 0, 0));
 
-  // Mit WLAN verbinden
+  // ✅ Connect to WiFi
   WiFi.begin(ssid, password);
   Serial.print("Verbinde mit WLAN");
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.print(".");
   }
-  Serial.println("Verbunden!");
+  Serial.println("\nVerbunden!");
 
-  // Socket.IO connection
-  socketIO.begin("172.20.10.4", 5000, "/socket.io/?EIO=4");
-  socketIO.onEvent(socketIOEvent);
-
-
+  // ✅ Connect to Socket.IO server
+  socketIO.begin("c847-193-171-62-34", 5000, "/socket.io/?EIO=4");
+  socketIO.onEvent(SocketIOEvent);
 }
 
 void loop() {
@@ -95,9 +83,9 @@ void loop() {
 
   renderWebsite();
   delay(100);
+}
 
-} 
-
+// ✅ Send sign update request to the server
 bool sendUpdateRequest(String sign) {
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("Fehler: Keine Verbindung mit WLAN");
@@ -126,7 +114,7 @@ bool sendUpdateRequest(String sign) {
   return success;
 }
 
-// Map sign names to image filenames
+// ✅ Map sign names to image filenames
 const char* getImageForSign(const String& sign) {
   if (sign == "STOP") return "stop_schild.png";
   if (sign == "Geschwindigkeit 50") return "50kmh_schild.png";
@@ -137,30 +125,46 @@ const char* getImageForSign(const String& sign) {
 
 int currentSignIndex = 0;
 
+// ✅ Display the sign on the VGA screen
 void renderWebsite() {
   vga.clear(vga.RGB(0, 0, 0));
   
   // Build image URL based on current sign
   const char* imageName = getImageForSign(currentSign);
-  String imageUrl = "http://172.20.10.4:5000/get_image/signs/" + String(imageName);
-
   
-  if (!imageHandler.displayImage(imageUrl.c_str())) {
-    // Fallback to text if image fails
-    vga.setCursor(10, 10);
-    vga.setTextColor(vga.RGB(255, 255, 255));
-    vga.print("Verkehrszeichen Anzeige");
+  if (imageName != nullptr && strlen(imageName) > 0) {
+    String imageUrl = "http://172.20.10.4:5000/get_image/" + String(imageName);
 
-    vga.setCursor(10, 30);
-    vga.setTextColor(vga.RGB(255, 255, 0));
+    if (imageHandler.displayImage(imageUrl.c_str())) {
+      Serial.println("Image loaded successfully: " + imageUrl);
+      return;
+    }
+  }
+
+  // Fallback to text if image fails
+  vga.setCursor(10, 10);
+  vga.setTextColor(vga.RGB(255, 255, 255));
+  vga.print("Verkehrszeichen Anzeige");
+
+  vga.setCursor(10, 30);
+  vga.setTextColor(vga.RGB(255, 255, 0));
   vga.print("Aktuelles Schild: ");
   vga.print(currentSign);
-
-  }
 }
 
+// ✅ Change sign by cycling through a predefined list
 void changeSign(int direction) {
-  currentSignIndex = (currentSignIndex + direction) % 4;
-  if (currentSignIndex < 0) currentSignIndex = 3;
-  Serial.println("Changed sign to: " + String(trafficSigns[currentSignIndex]));
+  const char* trafficSigns[] = {
+    "STOP",
+    "Geschwindigkeit 50",
+    "Achtung Baustelle",
+    "Freie Fahrt"
+  };
+  int signCount = sizeof(trafficSigns) / sizeof(trafficSigns[0]);
+
+  currentSignIndex = (currentSignIndex + direction) % signCount;
+  if (currentSignIndex < 0) currentSignIndex = signCount - 1;
+
+  currentSign = trafficSigns[currentSignIndex];
+  Serial.println("Changed sign to: " + String(currentSign));
 }
