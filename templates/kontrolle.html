@@ -25,7 +25,7 @@
             font-weight: bold;
             letter-spacing: 2px;
             flex-direction: column;
-            position: relative; /* Set relative positioning to anchor the button */
+            position: relative;
         }
         .content {
             flex-grow: 1;
@@ -40,7 +40,7 @@
             flex-direction: column;
             gap: 15px;
             align-items: center;
-            width: 300px; /* Set width for consistent button sizing */
+            width: 300px;
         }
         .button-container button {
             padding: 15px;
@@ -51,7 +51,7 @@
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
-            width: 100%; /* Make buttons expand to fill container */
+            width: 100%;
         }
         .button-container button:hover {
             background-color: #005288;
@@ -60,7 +60,7 @@
         .bottom-bar {
             background-color: #001f3f;
             color: white;
-            padding: 60px;
+            padding: 20px;
             text-align: center;
         }
         .info-text {
@@ -68,11 +68,11 @@
             font-size: 18px;
             color: #333;
         }
-        /* MAIN Button position */
         .main-button {
-            position: absolute; /* Absolute Positionierung */
-            top: 10px; /* Abstand vom oberen Rand */
-            left: 10px; /* Abstand vom linken Rand */
+            position: absolute;
+            left: 20px; /* Button mehr nach links verschoben */
+            top: 50%; /* Button vertikal mittig auf der oberen Leiste */
+            transform: translateY(-50%); /* Damit der Button genau mittig ist */
             padding: 15px 30px;
             font-size: 18px;
             color: white;
@@ -83,14 +83,13 @@
             transition: background-color 0.3s, border-color 0.3s;
         }
         .main-button:hover {
-            background-color: #005288; /* Background color on hover */
-            border-color: #005288; /* Change border color on hover */
+            background-color: #005288;
+            border-color: #005288;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
     <script>
         var socket = io();
-
         function updateSign(sign) {
             fetch("/update", {
                 method: "POST",
@@ -105,9 +104,8 @@
     </script>
 </head>
 <body>
-<<<<<<< Updated upstream
     <div class="bar">
-        <button class="main-button" onclick="window.location.href='/main'">MAIN</button> <!-- MAIN Button in der linken oberen Ecke der Bar -->
+        <button class="main-button" onclick="window.location.href='/main'">MAIN</button>
         <h1 style="margin: 0; font-size: 24px;">Kontrollseite</h1>
     </div>
     <div class="content">
@@ -121,19 +119,6 @@
     <div class="bottom-bar">
         &copy; 2025 Konrad Solecki | Cezar-Andrei Iosif-Petrescu | David Jovanovic
     </div>
-=======
-    <h2>Kontrollseite</h2>
-    <div class="bar">
-        <button class="menu-button">☰</button>
-        <div class="dropdown-menu">
-            <button onclick="window.location.href='/main'">Home</button>
-            <button onclick="window.location.href='/kontrolle'">KONTROLLE</button>
-            <button onclick="window.location.href='/verkehrszeichen'">VERKEHRSZEICHEN</button>
-            <button>Button 3</button>
-        </div>
-    <button onclick="window.location.href='/main'">MAIN</button>
->>>>>>> Stashed changes
-
     <script>
         const ws = new WebSocket('ws://localhost:5000/ws');
         ws.onmessage = function(event) {

@@ -18,14 +18,20 @@ PASSWORD = "1234"
 def login():
     session.clear()
     if request.method == "POST":
+        if "guest" in request.form:  # Check if the guest login button was pressed
+            return redirect(url_for("main_guest"))  # Redirect to guest main page
+
         username = request.form.get("username")
         password = request.form.get("password")
 
         if username == USERNAME and password == PASSWORD:
             session["logged_in"] = True
             return redirect(url_for("main"))
-        return render_template("login.html", error=True)
-    return render_template("login.html")
+    
+    return render_template("login.html", error=True)
+
+
+
 
 @app.route("/main")
 def main():
@@ -33,17 +39,32 @@ def main():
         return redirect(url_for("login"))
     return render_template("main.html")
 
+
 @app.route("/kontrolle")
 def kontrolle():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
     return render_template("kontrolle.html")
 
+
 @app.route("/verkehrszeichen")
 def verkehrszeichen():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
     return render_template("verkehrszeichen.html")
+
+
+@app.route("/guestm")
+def main_guest():
+    return render_template("main_guest.html")
+
+
+
+@app.route("/guestv")
+def verkehrszeichen_guest():
+    return render_template("guest_verkehrszeichen.html")
+
+
 
 @app.route("/update", methods=["POST"])
 def update_sign():
