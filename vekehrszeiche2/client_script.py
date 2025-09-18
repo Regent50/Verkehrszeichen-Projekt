@@ -34,6 +34,7 @@ def update_sign(data):
             # Das Bild im Byte-Format erhalten, wenn es erfolgreich ist
             image_response = requests.get(image_url)
             if image_response.status_code == 200:
+                # Das Bild öffnen und anzeigen
                 image = Image.open(BytesIO(image_response.content))
                 image.show()  # Zeige das Bild an
             else:
