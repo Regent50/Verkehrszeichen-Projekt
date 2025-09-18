@@ -68,12 +68,12 @@ def verkehrszeichen_guest():
 
 @app.route("/update", methods=["POST"])
 def update_sign():
-    sign = request.form.get("sign")
+    sign = request.form.get("sign")  # Holen des Parameters 'sign' aus der POST-Anfrage
     if sign:
         print(f"Verkehrszeichen aktualisiert: {sign}")
-        socketio.emit("update_sign", {"sign": sign})
+        socketio.emit("update_sign", {"sign": sign})  # WebSocket-Update an alle verbundenen Clients
         return "Update erfolgreich", 200
-    return "Fehler: Kein Sign-Parameter", 400
+    return "Fehler: Kein Sign-Parameter", 400  # Fehler, wenn 'sign' nicht gesendet wird
 
 # New image handling endpoint
 @app.route("/get_image/<image_name>")

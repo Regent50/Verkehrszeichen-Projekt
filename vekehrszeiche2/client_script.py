@@ -25,15 +25,21 @@ def update_sign(data):
         # Fordere das Bild des Verkehrszeichens vom Server an
         image_url = f"{ngrok_url}/get_image/{sign}"
         print(f"Fordere Bild an: {image_url}")
-        response = requests.get(image_url)
+        
+        # Sende POST-Anfrage mit dem 'sign' Parameter
+        response = requests.post(f"{ngrok_url}/update", data={"sign": sign})
         
         if response.status_code == 200:
-            # Das Bild im Byte-Format erhalten
-            image = Image.open(BytesIO(response.content))
-            # Hier kannst du das Bild anzeigen oder verarbeiten (z.B. auf dem Bildschirm ausgeben)
-            image.show()
+            print("Verkehrszeichen erfolgreich aktualisiert!")
+            # Das Bild im Byte-Format erhalten, wenn es erfolgreich ist
+            image_response = requests.get(image_url)
+            if image_response.status_code == 200:
+                image = Image.open(BytesIO(image_response.content))
+                image.show()  # Zeige das Bild an
+            else:
+                print(f"Fehler beim Abrufen des Bildes: {image_response.status_code}")
         else:
-            print(f"Fehler beim Abrufen des Bildes: {response.status_code}")
+            print(f"Fehler beim Aktualisieren des Verkehrszeichens: {response.status_code}")
 
 # WebSocket-Verbindung herstellen
 def run():
