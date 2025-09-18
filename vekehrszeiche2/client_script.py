@@ -41,10 +41,10 @@ def update_sign(data):
         else:
             print(f"Fehler beim Aktualisieren des Verkehrszeichens: {response.status_code}")
 
-# WebSocket-Verbindung herstellen
+# WebSocket-Verbindung herstellen (keine Namespace-Angabe, da Standard-Namespace)
 def run():
     print(f"Verbinde mit: {ngrok_url}")
-    sio.connect(ngrok_url)  # Verwende die ngrok-URL
+    sio.connect(ngrok_url)  # Verwende die ngrok-URL ohne zusätzlichen Namespace
     sio.wait()  # Warte, bis die Verbindung hergestellt und aktiv bleibt
 
 # Main-Schleife, die weiterhin läuft, um die Verbindung aufrechtzuerhalten
