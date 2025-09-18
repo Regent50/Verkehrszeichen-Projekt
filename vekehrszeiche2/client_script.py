@@ -1,6 +1,8 @@
 import socketio
 import requests
 import time
+from PIL import Image
+from io import BytesIO
 
 # ngrok API URL, um die öffentliche URL zu bekommen
 ngrok_api_url = "http://localhost:4040/api/tunnels"
@@ -8,7 +10,10 @@ ngrok_api_url = "http://localhost:4040/api/tunnels"
 def get_ngrok_url():
     """Holt die ngrok-URL über die ngrok-API."""
     try:
+        # API-Anfrage an ngrok stellen
         response = requests.get(ngrok_api_url)
+        
+        # Wenn die Antwort erfolgreich ist (Statuscode 200)
         if response.status_code == 200:
             tunnels = response.json().get('tunnels', [])
             if tunnels:
