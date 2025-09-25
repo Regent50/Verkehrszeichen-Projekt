@@ -4,9 +4,9 @@ from PIL import Image
 import os
 
 # Lokaler Ordner mit Bildern
-IMAGE_FOLDER = "Verkehrszeichen-Projekt/static/signs"  # relativ zum Client-Script
+IMAGE_FOLDER = "Verkehrszeichen-Projekt/static/signs"
 
-# Mapping der Verkehrszeichen zum lokalen Bild
+# Mapping Verkehrszeichen → Bilddatei
 SIGN_IMAGES = {
     "STOP": "stop_schild.png",
     "Geschwindigkeit 50": "50kmh_schild.png",
@@ -14,12 +14,12 @@ SIGN_IMAGES = {
     "Freie Fahrt": "freifahrt_schild.png"
 }
 
-# Initialisiere SocketIO-Client
+# SocketIO-Client initialisieren
 sio = socketio.Client()
 
 # Pygame initialisieren
 pygame.init()
-screen = pygame.display.set_mode((800, 600))  # Fenstergröße anpassen
+screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Verkehrszeichen Anzeige")
 
 @sio.event
@@ -41,10 +41,8 @@ def update_sign(data):
             if os.path.isfile(image_path):
                 # Bild öffnen
                 image = Image.open(image_path).convert("RGB")
-                # Bild in pygame konvertieren
                 pygame_image = pygame.image.fromstring(image.tobytes(), image.size, image.mode)
-                
-                # Bildschirmgröße an Bild anpassen
+                # Bildschirmgröße anpassen
                 screen = pygame.display.set_mode(image.size)
                 screen.blit(pygame_image, (0, 0))
                 pygame.display.flip()
@@ -55,8 +53,11 @@ def update_sign(data):
             print(f"Kein lokales Bild für Sign '{sign}' definiert")
 
 def run():
-    # Hier die ngrok-URL deines Servers eintragen
-    sio.connect("https://nontemporary-alise-piquantly.ngrok-free.app")
+    # Verbindung zum Server mit WebSocket erzwingen
+    sio.connect(
+        "https://nontemporary-alise-piquantly.ngrok-free.app",
+        transports=["websocket"]
+    )
     sio.wait()
 
 if __name__ == "__main__":
