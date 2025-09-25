@@ -22,6 +22,9 @@ pygame.init()
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Verkehrszeichen Anzeige")
 
+# Variable, die das aktuelle Bild hält
+current_image = None
+
 @sio.event
 def connect():
     print("Verbindung zum Flask-Server hergestellt")
@@ -32,6 +35,7 @@ def disconnect():
 
 @sio.event
 def update_sign(data):
+    global current_image
     sign = data.get("sign")
     if sign:
         print(f"Verkehrszeichen ändern zu: {sign}")
@@ -39,12 +43,13 @@ def update_sign(data):
         if image_file:
             image_path = os.path.join(IMAGE_FOLDER, image_file)
             if os.path.isfile(image_path):
-                # Bild öffnen
+                # Bild öffnen und in pygame konvertieren
                 image = Image.open(image_path).convert("RGB")
-                pygame_image = pygame.image.fromstring(image.tobytes(), image.size, image.mode)
-                # Bildschirmgröße anpassen
-                screen = pygame.display.set_mode(image.size)
-                screen.blit(pygame_image, (0, 0))
+                current_image = pygame.image.fromstring(image.tobytes(), image.size, image.mode)
+                # Fenstergröße an Bildgröße anpassen
+                pygame.display.set_mode(image.size)
+                # Direktes Update auf dem Screen
+                screen.blit(current_image, (0, 0))
                 pygame.display.flip()
                 print(f"Bild {image_file} auf Monitor angezeigt")
             else:
@@ -53,12 +58,26 @@ def update_sign(data):
             print(f"Kein lokales Bild für Sign '{sign}' definiert")
 
 def run():
-    # Verbindung zum Server mit WebSocket erzwingen
+    # Verbindung zum Server über HTTP und WebSocket erzwingen
     sio.connect(
-        "https://nontemporary-alise-piquantly.ngrok-free.app",
+        "http://nontemporary-alise-piquantly.ngrok-free.app/kontrolle",  # HTTP-URL von ngrok
         transports=["websocket"]
     )
-    sio.wait()
+
+    # Hauptloop für Pygame, Fenster dauerhaft offen
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        # Wenn ein Bild geladen ist, dauerhaft anzeigen
+        if current_image:
+            screen.blit(current_image, (0, 0))
+            pygame.display.flip()
+
+    # SocketIO trennen, wenn Fenster geschlossen wird
+    sio.disconnect()
+    pygame.quit()
 
 if __name__ == "__main__":
     run()
