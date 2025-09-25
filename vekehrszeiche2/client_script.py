@@ -60,7 +60,7 @@ def update_sign(data):
 def run():
     # Verbindung zum Server über HTTP und WebSocket erzwingen
     sio.connect(
-        "http://nontemporary-alise-piquantly.ngrok-free.app/kontrolle",  # HTTP-URL von ngrok
+        "http://nontemporary-alise-piquantly.ngrok-free.app",  # HTTP-URL von ngrok
         transports=["websocket"]
     )
 
