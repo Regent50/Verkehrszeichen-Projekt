@@ -64,7 +64,7 @@ def update_sign(data):
 # Funktion zum Verbinden und Warten auf WebSocket
 def run():
     # HTTP-URL von ngrok verwenden
-    ngrok_url = "http://nontemporary-alise-piquantly.ngrok-free.app"  # ngrok HTTP-URL
+    ngrok_url = "https://nontemporary-alise-piquantly.ngrok-free.app"  # ngrok HTTP-URL
     print(f"Verbinde mit: {ngrok_url}")
     
     try:
