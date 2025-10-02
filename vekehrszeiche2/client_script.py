@@ -4,7 +4,7 @@ from PIL import Image
 import os
 
 # Lokaler Ordner mit Bildern
-IMAGE_FOLDER = "Verkehrszeichen-Projekt/static/signs"  # Lokaler Ordner, bitte anpassen
+IMAGE_FOLDER = "Verkehrszeichen-Projekt/static/signs"
 
 # Mapping der Verkehrszeichen zu Bilddateien
 SIGN_IMAGES = {
@@ -15,12 +15,12 @@ SIGN_IMAGES = {
 }
 
 # Initialisierung des SocketIO-Clients
-sio = socketio.Client()
+sio = socketio.Client(logger=True, engineio_logger=True)
 
 # Pygame initialisieren
 pygame.init()
 # Vollbildmodus für den Pi Zero
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((800, 600))  # Größe anpassen, falls nötig
 pygame.display.set_caption("Verkehrszeichen Anzeige")
 
 # Variable, die das aktuelle Bild speichert
@@ -64,10 +64,14 @@ def update_sign(data):
 # Funktion zum Verbinden und Warten auf WebSocket
 def run():
     # HTTP-URL von ngrok verwenden
-    sio.connect(
-        "http://nontemporary-alise-piquantly.ngrok-free.app",  # ngrok HTTP-URL
-        transports=["websocket"]
-    )
+    ngrok_url = "http://nontemporary-alise-piquantly.ngrok-free.app"  # ngrok HTTP-URL
+    print(f"Verbinde mit: {ngrok_url}")
+    
+    try:
+        sio.connect(ngrok_url, transports=["websocket"])
+        print("Verbindung erfolgreich!")
+    except Exception as e:
+        print(f"Verbindungsfehler: {e}")
 
     # Hauptloop für Pygame, Fenster dauerhaft offen
     running = True
