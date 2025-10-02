@@ -4,9 +4,9 @@ from PIL import Image
 import os
 
 # Lokaler Ordner mit Bildern
-IMAGE_FOLDER = "Verkehrszeichen-Projekt/static/signs"
+IMAGE_FOLDER = "Verkehrszeichen-Projekt/static/signs"  # Lokaler Ordner, bitte anpassen
 
-# Mapping Verkehrszeichen → Bilddatei
+# Mapping der Verkehrszeichen zu Bilddateien
 SIGN_IMAGES = {
     "STOP": "stop_schild.png",
     "Geschwindigkeit 50": "50kmh_schild.png",
@@ -14,25 +14,29 @@ SIGN_IMAGES = {
     "Freie Fahrt": "freifahrt_schild.png"
 }
 
-# SocketIO-Client initialisieren
+# Initialisierung des SocketIO-Clients
 sio = socketio.Client()
 
 # Pygame initialisieren
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+# Vollbildmodus für den Pi Zero
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 pygame.display.set_caption("Verkehrszeichen Anzeige")
 
-# Variable, die das aktuelle Bild hält
+# Variable, die das aktuelle Bild speichert
 current_image = None
 
+# Event: Verbindung zum Server hergestellt
 @sio.event
 def connect():
     print("Verbindung zum Flask-Server hergestellt")
 
+# Event: Verbindung getrennt
 @sio.event
 def disconnect():
     print("Verbindung getrennt")
 
+# Event: Verkehrszeichen wurde geändert
 @sio.event
 def update_sign(data):
     global current_image
@@ -43,12 +47,12 @@ def update_sign(data):
         if image_file:
             image_path = os.path.join(IMAGE_FOLDER, image_file)
             if os.path.isfile(image_path):
-                # Bild öffnen und in pygame konvertieren
+                # Bild öffnen und in Pygame-Format konvertieren
                 image = Image.open(image_path).convert("RGB")
                 current_image = pygame.image.fromstring(image.tobytes(), image.size, image.mode)
-                # Fenstergröße an Bildgröße anpassen
+                # Fenstergröße auf Bildgröße anpassen
                 pygame.display.set_mode(image.size)
-                # Direktes Update auf dem Screen
+                # Bild auf Bildschirm anzeigen
                 screen.blit(current_image, (0, 0))
                 pygame.display.flip()
                 print(f"Bild {image_file} auf Monitor angezeigt")
@@ -57,10 +61,11 @@ def update_sign(data):
         else:
             print(f"Kein lokales Bild für Sign '{sign}' definiert")
 
+# Funktion zum Verbinden und Warten auf WebSocket
 def run():
-    # Verbindung zum Server über HTTP und WebSocket erzwingen
+    # HTTP-URL von ngrok verwenden
     sio.connect(
-        "http://nontemporary-alise-piquantly.ngrok-free.app",  # HTTP-URL von ngrok
+        "http://nontemporary-alise-piquantly.ngrok-free.app",  # ngrok HTTP-URL
         transports=["websocket"]
     )
 
