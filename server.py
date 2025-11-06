@@ -8,8 +8,8 @@ app = Flask(__name__,
 app.secret_key = "geheimes_passwort"
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-USERNAME = "admin"
-PASSWORD = "1234"
+USERNAME = "htl"
+PASSWORD = "5AHEL"
 
 @app.route("/", methods=["GET", "POST"])
 def login():
