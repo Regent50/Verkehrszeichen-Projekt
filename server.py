@@ -2,15 +2,23 @@ from flask import Flask, render_template, request, redirect, url_for, session, s
 from flask_socketio import SocketIO, emit
 import os
 
-app = Flask(__name__, 
+# Flask App Setup
+app = Flask(__name__,  # Verwende __name__ anstelle von 'name'
             template_folder=os.path.abspath('templates'),
             static_folder=os.path.abspath('static'))
 app.secret_key = "geheimes_passwort"
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+# Benutzername und Passwort
 USERNAME = "htl"
 PASSWORD = "5AHEL"
 
+# Verzeichnis für Bilder
+image_folder = "./images"
+if not os.path.exists(image_folder):
+    os.makedirs(image_folder)
+
+# WebSocket Events
 @app.route("/", methods=["GET", "POST"])
 def login():
     session.clear()
@@ -21,6 +29,7 @@ def login():
         password = request.form.get("password")
         if username == USERNAME and password == PASSWORD:
             session["logged_in"] = True
+            print(f"Login erfolgreich für: {username}")  # Log-Ausgabe für erfolgreichen Login
             return redirect(url_for("main"))
     return render_template("login.html", error=True)
 
@@ -54,32 +63,40 @@ def verkehrszeichen_guest():
 def update_sign():
     sign = request.form.get("sign")
     if sign:
-        print(f"Verkehrszeichen aktualisiert: {sign}")
-        socketio.emit("update_sign", {"sign": sign})  
+        print(f"Verkehrszeichen aktualisiert: {sign}")  # Ausgabe, wenn ein Update stattfindet
+        socketio.emit("update_sign", {"sign": sign})  # Sende das Bild an den Client
         return "Update erfolgreich", 200
     return "Fehler: Kein Sign-Parameter", 400
 
 # Neue Route zum Abrufen der Bilder ohne VGA-Konvertierung
 @app.route("/get_image/<image_name>")
 def get_image(image_name):
-    # Liste gültiger Bildnamen
     valid_images = ["50kmh_schild.png", "baustelle_schild.png", "freifahrt_schild.png", "stop_schild.png"]
     
     if image_name not in valid_images:
         return "Invalid image name", 404
     
     try:
-        # Bildpfad im static/signs Ordner
         image_path = os.path.join(app.static_folder, "signs", image_name)
         
-        # Überprüfe, ob das Bild existiert
         if not os.path.isfile(image_path):
+            print(f"Bild {image_name} nicht gefunden")  # Ausgabe, wenn Bild nicht gefunden wird
             return f"Bild {image_name} nicht gefunden", 404
         
-        # Gib das Bild direkt zurück, ohne es zu konvertieren
+        print(f"Bild {image_name} wird gesendet.")  # Ausgabe, wenn Bild gefunden und gesendet wird
         return send_file(image_path, mimetype='image/png')
     except Exception as e:
+        print(f"Error beim Abrufen des Bildes: {str(e)}")  # Ausgabe bei Fehlern
         return f"Error: {str(e)}", 500
 
-if __name__ == "__main__":
+# Event, wenn ein Client eine Verbindung herstellt
+@socketio.on('connect')
+def handle_connect():
+    print("Ein Client hat sich verbunden.")  # Ausgabe, wenn ein Client erfolgreich verbunden ist
+    # Weitere spezifische Ausgabe, um den Client-Typ zu erkennen
+    emit('message', {'message': 'Verkehrszeichen-Client erfolgreich verbunden!'})
+
+# Hauptprogramm für den Flask-Server
+if __name__ == "__main__":  # Verwende __name__ anstelle von 'name'
+    print("Server wird gestartet...")  # Ausgabe, wenn der Server gestartet wird
     socketio.run(app, debug=True, host="0.0.0.0", port=5000)
