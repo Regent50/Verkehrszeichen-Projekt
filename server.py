@@ -51,6 +51,12 @@ def verkehrszeichen():
         return redirect(url_for("login"))
     return render_template("verkehrszeichen.html")
 
+@app.route("/verkehrszeichen1")
+def verkehrszeichen1():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+    return render_template("Verkehrszeichen1.html")
+
 @app.route("/guestm")
 def main_guest():
     return render_template("main_guest.html")

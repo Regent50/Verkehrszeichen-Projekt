@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <!-- Meta-Daten für die Webseite -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <title>V.z. Seite</title>
+    <style>
+        /* Allgemeine Stile für den Body und die Zentrierung der Inhalte */
+        body 
+        {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center; /* Zentriert die Inhalte horizontal */
+            align-items: center; /* Zentriert die Inhalte vertikal */
+            height: 100vh; /* Setzt die Höhe auf 100% der Viewport-Höhe */
+            margin: 0; /* Entfernt Standardabstände */
+            background-color: transparent; /* Hintergrund ohne Inhalt */
+        }
+
+        /* Container für das gesamte Layout */
+        .container {
+            position: relative; /* Ermöglicht das Positionieren der Rechtecke innerhalb des Containers */
+            width: 90vw; /* 90% der Viewport-Breite */
+            height: 90vh; /* 90% der Viewport-Höhe */
+        }
+
+        /* Das große Rechteck in der Mitte der Seite */
+        .big-rectangle {
+            width: 100%; /* Breite des Rechtecks = 100% der Containerbreite */
+            height: 100%; /* Höhe des Rechtecks = 100% der Containerhöhe */
+            border: 2px solid black; /* Schwarze Kontur */
+            display: flex;
+            justify-content: center; /* Zentriert das Bild horizontal */
+            align-items: center; /* Zentriert das Bild vertikal */
+        }
+
+        /* Bild, das im Rechteck angezeigt wird */
+        .big-rectangle img {
+            object-fit: contain; /* Skaliert das Bild, behält jedoch die Proportionen bei */
+            width: 100%; /* Bildbreite auf 100% der Containerbreite */
+            height: 100%; /* Bildhöhe auf 100% der Containerhöhe */
+        }
+    </style>
+    <script>
+        var socket = io();
+
+        socket.on("update_sign", function(data) {
+            console.log("Neues Verkehrszeichen:", data.sign);
+            var textDisplay = document.getElementById("signText");
+            var imageDisplay = document.getElementById("signImage");
+
+            textDisplay.innerText = data.sign;
+
+            var signImages = {
+                "STOP": "/static/signs/stop_schild.png",
+                "Geschwindigkeit 50": "/static/signs/50kmh_schild.png",
+                "Achtung Baustelle": "/static/signs/baustelle_schild.png",
+                "Freie Fahrt": "/static/signs/freifahrt_schild.png"
+            };
+
+            if (signImages[data.sign]) {
+                imageDisplay.src = signImages[data.sign];
+                imageDisplay.style.display = "block";
+            } else {
+                imageDisplay.style.display = "none";
+            }
+        });
+    </script>
+</head> 
+<body>
+    <!-- Hauptcontainer, der das Layout enthält -->
+    <div class="container">
+        <!-- Großes Rechteck in der Mitte der Seite -->
+        
+            <!-- Hier wird das Bild eingefügt -->
+            <div id="signText">Kein Verkehrszeichen</div>
+            <img id="signImage" src="" alt="Verkehrszeichen">       
+    </div>
+</body>
+</html>
