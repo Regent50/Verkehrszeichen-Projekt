@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main – Verkehrszeichen</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+
+    <style>
+        /* =========================================================
+           GLOBAL / RESET
+           ========================================================= */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Verdana, sans-serif;
+        }
+
+        /* =========================================================
+           HAUPT-LAYOUT
+           ========================================================= */
+        .background {
+            display: flex;
+            height: 100%;
+            background-color: #f5f5f5;
+        }
+
+        /* =========================================================
+           SIDEBAR (LINKS)
+           ========================================================= */
+        .sidebar {
+            width: 200px;
+            border-right: 4px solid black;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            
+            /* Muster & Gradient */
+            background-image:
+                radial-gradient(#040000 1px, transparent 1px),
+                linear-gradient(to top, yellow, red);
+            background-size: 12px 12px, 100% 100%;
+            background-repeat: repeat, no-repeat;
+            z-index: 1000;
+        }
+
+        .sidebar > button, 
+        .sidebar-footer button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 14px;
+            border: 3px solid black;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .sidebar > button:hover, 
+        .sidebar-footer button:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* =========================================================
+           SIDEBAR-DROPDOWN-PANELS
+           ========================================================= */
+        .panel {
+            width: 90%;
+            margin: 0 auto 12px auto;
+            background: white;
+            border: 3px solid black;
+            border-radius: 14px;
+            padding: 0 10px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .panel.open {
+            max-height: 200px;
+            padding: 10px;
+        }
+
+        .panel button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            border: 2px solid black;
+            background: #fafafa;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .panel button:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* =========================================================
+           SIDEBAR – UNTERER BEREICH
+           ========================================================= */
+        .sidebar-footer {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================================================
+           CONTENT-BEREICH
+           ========================================================= */
+        .content {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            overflow-y: auto;
+        }
+
+        /* =========================================================
+           RESPONSIVE GRID
+           ========================================================= */
+        .main-panels {
+            display: grid;
+            grid-template-columns: 1fr 1.6fr;
+            gap: 30px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* =========================================================
+           ANZEIGE (VERKEHRSZEICHEN) & KARTE
+           ========================================================= */
+        .anzeige-box,
+        .karte-box {
+            border: 4px solid black;
+            border-radius: 18px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Spezifische Styles für die Verkehrszeichen-Box */
+        .anzeige-box {
+            flex-direction: column; /* Damit Text über Bild steht */
+            padding: 20px;
+            text-align: center;
+        }
+
+        #signText {
+            font-size: 24px;
+            font-weight: bold;
+            color: black;
+            margin-bottom: 20px;
+        }
+
+        #signImage {
+            display: none;
+            max-width: 80%; /* Passt sich der Box an */
+            max-height: 250px; /* Wird nicht zu riesig */
+            width: auto;
+            height: auto;
+        }
+
+        /* Map spezifisches CSS */
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* =========================================================
+           SENSOR-LEISTE
+           ========================================================= */
+        .sensor-bar {
+            height: 90px;
+            border: 4px solid black;
+            border-radius: 18px;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 0 20px;
+            overflow-x: auto;
+        }
+
+        .sensor-box {
+            width: 160px;
+            height: 55px;
+            border: 2px solid red;
+            border-radius: 14px;
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 15px;
+            flex-shrink: 0;
+        }
+
+        .sensor-title {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .sensor-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* =========================================================
+           MEDIA QUERIES
+           ========================================================= */
+        @media (max-width: 1200px) {
+            .main-panels {
+                grid-template-columns: 1fr;
+                grid-template-rows: 400px 400px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="background">
+
+    <div class="sidebar">
+
+        <button onmouseenter="togglePanel('kontrolle')">Kontrolle</button>
+        <div class="panel" id="kontrolle">
+            <button onclick="window.location.href='/kontrolle'">Zur Kontrolle</button>
+            <button onclick="console.log('Platzhalter')">Option 2</button>
+        </div>
+
+        <button onmouseenter="togglePanel('zeichen')">Verkehrszeichen</button>
+        <div class="panel" id="zeichen">
+            <button onclick="window.location.href='/verkehrszeichen'">VZ Preview</button>
+            <button onclick="window.location.href='/verkehrszeichen1'">VZ Live</button>
+        </div>
+
+        <div class="sidebar-footer">
+            <button onclick="console.log('Placeholder klick')">Placeholder</button>
+            
+            <div class="sidebar-bottom">
+                <button onclick="alert('Zurück zum Login')">Zurück zu Login</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="content">
+
+        <div class="main-panels">
+            <div class="anzeige-box">
+                <div id="signText">Warte auf Signal...</div>
+                <img id="signImage" src="" alt="Verkehrszeichen">
+            </div>
+            
+            <div class="karte-box">
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <div class="sensor-bar">
+            <div class="sensor-box">
+                <div class="sensor-title">Temperatur</div>
+                <div class="sensor-value">wallah kalt</div>
+            </div>
+            <div class="sensor-box">
+                <div class="sensor-title">Helligkeit</div>
+                <div class="sensor-value">67 %</div>
+            </div>
+            <div class="sensor-box">
+                <div class="sensor-title">Status</div>
+                <div class="sensor-value">Aktiv</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    /* ================= SIDEBAR LOGIK ================= */
+    let activePanel = null;
+
+    function togglePanel(panelId) {
+        const panel = document.getElementById(panelId);
+        if (activePanel === panel) return;
+        document.querySelectorAll(".panel").forEach(p => p.classList.remove("open"));
+        panel.classList.add("open");
+        activePanel = panel;
+    }
+
+    /* ================= MAP LOGIK ================= */
+    var map = L.map('map').setView([52.5200, 13.4050], 12);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    function showLocation(position) {
+        var userLat = position.coords.latitude;
+        var userLon = position.coords.longitude;
+
+        L.marker([userLat, userLon]).addTo(map)
+            .bindPopup("<b>Du bist hier!</b>").openPopup();
+
+        map.setView([userLat, userLon], 14);
+    }
+
+    function handleLocationError(error) {
+        console.error("Fehler beim Abrufen des Standorts: ", error);
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showLocation, handleLocationError);
+    } else {
+        console.log("Geolocation wird nicht unterstützt");
+    }
+
+    setTimeout(function(){ map.invalidateSize(); }, 100);
+    window.addEventListener("resize", function () {
+        map.invalidateSize();
+    });
+
+    /* ================= VERKEHRSZEICHEN LOGIK (SOCKET.IO) ================= */
+    // Verbindung zum Server herstellen
+    var socket = io();
+
+    socket.on("update_sign", function(data) {
+        console.log("Neues Verkehrszeichen empfangen:", data.sign);
+        
+        var textDisplay = document.getElementById("signText");
+        var imageDisplay = document.getElementById("signImage");
+
+        // Text aktualisieren
+        textDisplay.innerText = data.sign;
+
+        // Bildpfade definieren (Pfade müssen auf deinem Server stimmen)
+        var signImages = {
+            "STOP": "/static/signs/stop_schild.png",
+            "Geschwindigkeit 50": "/static/signs/50kmh_schild.png",
+            "Achtung Baustelle": "/static/signs/baustelle_schild.png",
+            "Freie Fahrt": "/static/signs/freifahrt_schild.png"
+        };
+
+        // Bild aktualisieren oder ausblenden
+        if (signImages[data.sign]) {
+            imageDisplay.src = signImages[data.sign];
+            imageDisplay.style.display = "block";
+        } else {
+            imageDisplay.style.display = "none";
+        }
+    });
+
+</script>
+
+</body>
+</html>
