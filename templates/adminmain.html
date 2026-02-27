@@ -3,224 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main – Verkehrszeichen</title>
-
+    <title>Main – Verkehrszeichen Control</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
-
     <style>
-        /* =========================================================
-           GLOBAL / RESET
-           ========================================================= */
-        html, body {
-            height: 100%;
-            margin: 0;
-            font-family: Verdana, sans-serif;
-        }
+        html, body { height: 100%; margin: 0; font-family: Verdana, sans-serif; }
+        .background { display: flex; height: 100%; background-color: #f5f5f5; }
+        .sidebar { width: 200px; border-right: 4px solid black; padding: 20px 10px; display: flex; flex-direction: column; background-image: radial-gradient(#040000 1px, transparent 1px), linear-gradient(to top, yellow, red); background-size: 12px 12px, 100% 100%; z-index: 1000; }
+        .sidebar > button { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 14px; border: 3px solid black; background: white; cursor: pointer; font-weight: bold; }
+        .panel { width: 90%; margin: 0 auto 12px auto; background: white; border: 3px solid black; border-radius: 14px; padding: 0 10px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .panel.open { max-height: 400px; padding: 10px; }
+        .panel button { width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 10px; border: 2px solid black; background: #fafafa; cursor: pointer; font-weight: bold; }
+        .content { flex: 1; padding: 30px; display: flex; flex-direction: column; gap: 30px; overflow-y: auto; }
+        
+        /* FIX: GRID FÜR WINDOW-RESIZE */
+        .main-panels { display: grid; grid-template-columns: 1fr 1.6fr; gap: 30px; flex: 1; min-height: 0; }
+        
+        .anzeige-box, .karte-box { border: 4px solid black; border-radius: 18px; background: white; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .anzeige-box { flex-direction: column; padding: 20px; }
+        #signText { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        #signImage { display: none; max-width: 80%; max-height: 250px; }
+        #map { width: 100%; height: 100%; }
 
-        /* =========================================================
-           HAUPT-LAYOUT
-           ========================================================= */
-        .background {
-            display: flex;
-            height: 100%;
-            background-color: #f5f5f5;
-        }
-
-        /* =========================================================
-           SIDEBAR (LINKS)
-           ========================================================= */
-        .sidebar {
-            width: 200px;
-            border-right: 4px solid black;
-            padding: 20px 10px;
-            display: flex;
-            flex-direction: column;
-            
-            /* Muster & Gradient */
-            background-image:
-                radial-gradient(#040000 1px, transparent 1px),
-                linear-gradient(to top, yellow, red);
-            background-size: 12px 12px, 100% 100%;
-            background-repeat: repeat, no-repeat;
-            z-index: 1000;
-        }
-
-        .sidebar > button, 
-        .sidebar-footer button {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 12px;
-            border-radius: 14px;
-            border: 3px solid black;
-            background: white;
-            cursor: pointer;
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-
-        .sidebar > button:hover, 
-        .sidebar-footer button:hover {
-            background-color: #f0f0f0;
-        }
-
-        /* =========================================================
-           SIDEBAR-DROPDOWN-PANELS
-           ========================================================= */
-        .panel {
-            width: 90%;
-            margin: 0 auto 12px auto;
-            background: white;
-            border: 3px solid black;
-            border-radius: 14px;
-            padding: 0 10px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease, padding 0.3s ease;
-        }
-
-        .panel.open {
-            max-height: 300px; /* Erhöht, damit alle 4 Buttons passen */
-            padding: 10px;
-        }
-
-        .panel button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 10px;
-            border: 2px solid black;
-            background: #fafafa;
-            cursor: pointer;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .panel button:hover {
-            background-color: #e0e0e0;
-        }
-
-        /* =========================================================
-           SIDEBAR – UNTERER BEREICH
-           ========================================================= */
-        .sidebar-footer {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* =========================================================
-           CONTENT-BEREICH
-           ========================================================= */
-        .content {
-            flex: 1;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            overflow-y: auto;
-        }
-
-        /* =========================================================
-           RESPONSIVE GRID
-           ========================================================= */
-        .main-panels {
-            display: grid;
-            grid-template-columns: 1fr 1.6fr;
-            gap: 30px;
-            flex: 1;
-            min-height: 0;
-        }
-
-        /* =========================================================
-           ANZEIGE (VERKEHRSZEICHEN) & KARTE
-           ========================================================= */
-        .anzeige-box,
-        .karte-box {
-            border: 4px solid black;
-            border-radius: 18px;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .anzeige-box {
-            flex-direction: column;
-            padding: 20px;
-            text-align: center;
-        }
-
-        #signText {
-            font-size: 24px;
-            font-weight: bold;
-            color: black;
-            margin-bottom: 20px;
-        }
-
-        #signImage {
-            display: none;
-            max-width: 80%;
-            max-height: 250px;
-            width: auto;
-            height: auto;
-        }
-
-        /* Map spezifisches CSS */
-        #map {
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        /* =========================================================
-           SENSOR-LEISTE
-           ========================================================= */
-        .sensor-bar {
-            height: 90px;
-            border: 4px solid black;
-            border-radius: 18px;
-            background: white;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 0 20px;
-            overflow-x: auto;
-        }
-
-        .sensor-box {
-            width: 160px;
-            height: 55px;
-            border: 2px solid red;
-            border-radius: 14px;
-            background: #fafafa;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-left: 15px;
-            flex-shrink: 0;
-        }
-
-        .sensor-title {
-            font-size: 14px;
-            color: #555;
-        }
-
-        .sensor-value {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        /* =========================================================
-           MEDIA QUERIES
-           ========================================================= */
+        /* RESPONSIVE DESIGN FIX */
         @media (max-width: 1200px) {
             .main-panels {
                 grid-template-columns: 1fr;
@@ -229,157 +35,77 @@
         }
     </style>
 </head>
-
 <body>
 
 <div class="background">
-
     <div class="sidebar">
-
         <button onmouseenter="togglePanel('kontrolle')">Kontrolle</button>
         <div class="panel" id="kontrolle">
             <button onclick="updateSign('STOP')">STOP</button>
+            <button onclick="updateSign('Geschwindigkeit 30')">30 km/h</button> 
             <button onclick="updateSign('Geschwindigkeit 50')">50 km/h</button>
             <button onclick="updateSign('Achtung Baustelle')">Baustelle</button>
             <button onclick="updateSign('Freie Fahrt')">Freie Fahrt</button>
         </div>
-
+        
         <button onmouseenter="togglePanel('zeichen')">Verkehrszeichen</button>
         <div class="panel" id="zeichen">
             <button onclick="window.location.href='/verkehrszeichen'">VZ Preview</button>
             <button onclick="window.location.href='/verkehrszeichen1'">VZ Live</button>
         </div>
-
-        <div class="sidebar-footer">
-            <button onclick="console.log('Placeholder klick')">Placeholder</button>
-            
-            <div class="sidebar-bottom">
-                <button onclick="alert('Zurück zum Login')">Zurück zu Login</button>
-            </div>
-        </div>
-
     </div>
 
     <div class="content">
-
         <div class="main-panels">
             <div class="anzeige-box">
                 <div id="signText">Warte auf Signal...</div>
-                <img id="signImage" src="" alt="Verkehrszeichen">
+                <img id="signImage" src="" alt="VZ">
             </div>
-            
-            <div class="karte-box">
-                <div id="map"></div>
-            </div>
+            <div class="karte-box"><div id="map"></div></div>
         </div>
-
-        <div class="sensor-bar">
-            <div class="sensor-box">
-                <div class="sensor-title">Temperatur</div>
-                <div class="sensor-value">wallah kalt</div>
-            </div>
-            <div class="sensor-box">
-                <div class="sensor-title">Helligkeit</div>
-                <div class="sensor-value">67 %</div>
-            </div>
-            <div class="sensor-box">
-                <div class="sensor-title">Status</div>
-                <div class="sensor-value">Aktiv</div>
-            </div>
-        </div>
-
     </div>
 </div>
 
 <script>
-    /* ================= SIDEBAR LOGIK ================= */
-    let activePanel = null;
-
     function togglePanel(panelId) {
-        const panel = document.getElementById(panelId);
-        if (activePanel === panel) return;
         document.querySelectorAll(".panel").forEach(p => p.classList.remove("open"));
-        panel.classList.add("open");
-        activePanel = panel;
+        document.getElementById(panelId).classList.add("open");
     }
 
-    /* ================= FUNKTION ZUM SENDEN DER STEUERUNG (POST) ================= */
     function updateSign(sign) {
-        // Diese Funktion sendet den Befehl an deinen Server
         fetch("/update", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: "sign=" + sign
-        }).then(response => {
-            if (response.ok) {
-                console.log("Befehl gesendet: ", sign);
-                // Hinweis: Das visuelle Update erfolgt über Socket.IO (unten),
-                // sobald der Server die Bestätigung zurücksendet.
-            } else {
-                console.error("Fehler beim Senden des Befehls");
-            }
-        }).catch(error => {
-            console.error("Fetch Fehler:", error);
         });
     }
 
-    /* ================= MAP LOGIK ================= */
-    var map = L.map('map').setView([52.5200, 13.4050], 12);
+    // MAP SETUP
+    var map = L.map('map').setView([52.52, 13.40], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    function showLocation(position) {
-        var userLat = position.coords.latitude;
-        var userLon = position.coords.longitude;
-        L.marker([userLat, userLon]).addTo(map)
-            .bindPopup("<b>Du bist hier!</b>").openPopup();
-        map.setView([userLat, userLon], 14);
-    }
-
-    function handleLocationError(error) {
-        console.error("Fehler beim Abrufen des Standorts: ", error);
-    }
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showLocation, handleLocationError);
-    } else {
-        console.log("Geolocation wird nicht unterstützt");
-    }
-
-    setTimeout(function(){ map.invalidateSize(); }, 100);
+    // FIX: MAP RESIZE LOGIK
+    setTimeout(function(){ map.invalidateSize(); }, 200);
     window.addEventListener("resize", function () {
         map.invalidateSize();
     });
 
-    /* ================= VERKEHRSZEICHEN LOGIK (SOCKET.IO EMPFANG) ================= */
     var socket = io();
-
     socket.on("update_sign", function(data) {
-        console.log("Neues Verkehrszeichen empfangen:", data.sign);
-        
-        var textDisplay = document.getElementById("signText");
-        var imageDisplay = document.getElementById("signImage");
-
-        textDisplay.innerText = data.sign;
-
-        var signImages = {
-            "STOP": "/static/signs/stop_schild.png",
+        document.getElementById("signText").innerText = data.sign;
+        const img = document.getElementById("signImage");
+        const signs = { 
+            "STOP": "/static/signs/stop_schild.png", 
+            "Geschwindigkeit 30": "/static/signs/schild_30.png", 
             "Geschwindigkeit 50": "/static/signs/50kmh_schild.png",
             "Achtung Baustelle": "/static/signs/baustelle_schild.png",
             "Freie Fahrt": "/static/signs/freifahrt_schild.png"
         };
-
-        if (signImages[data.sign]) {
-            imageDisplay.src = signImages[data.sign];
-            imageDisplay.style.display = "block";
-        } else {
-            imageDisplay.style.display = "none";
+        if (signs[data.sign]) {
+            img.src = signs[data.sign];
+            img.style.display = "block";
         }
     });
-
 </script>
-
 </body>
 </html>
