@@ -17,7 +17,6 @@
         .panel button { width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 10px; border: 2px solid black; background: #fafafa; cursor: pointer; font-weight: bold; }
         .content { flex: 1; padding: 30px; display: flex; flex-direction: column; gap: 30px; overflow-y: auto; }
         
-        /* FIX: GRID FÜR WINDOW-RESIZE */
         .main-panels { display: grid; grid-template-columns: 1fr 1.6fr; gap: 30px; flex: 1; min-height: 0; }
         
         .anzeige-box, .karte-box { border: 4px solid black; border-radius: 18px; background: white; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
@@ -26,7 +25,6 @@
         #signImage { display: none; max-width: 80%; max-height: 250px; }
         #map { width: 100%; height: 100%; }
 
-        /* RESPONSIVE DESIGN FIX */
         @media (max-width: 1200px) {
             .main-panels {
                 grid-template-columns: 1fr;
@@ -67,6 +65,7 @@
 </div>
 
 <script>
+    // --- SIDEBAR LOGIK ---
     function togglePanel(panelId) {
         document.querySelectorAll(".panel").forEach(p => p.classList.remove("open"));
         document.getElementById(panelId).classList.add("open");
@@ -80,16 +79,40 @@
         });
     }
 
-    // MAP SETUP
+    // --- MAP SETUP ---
+    // Standard-View auf Berlin, falls Geolocation abgelehnt wird
     var map = L.map('map').setView([52.52, 13.40], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-    // FIX: MAP RESIZE LOGIK
+    // --- NEU: GEOLOCATION LOGIK ---
+    // Startet die Standortsuche und zoomt dorthin
+    map.locate({setView: true, maxZoom: 16});
+
+    function onLocationFound(e) {
+        var radius = e.accuracy / 2;
+        // Marker setzen
+        L.marker(e.latlng).addTo(map)
+            .bindPopup("Du bist hier (Genauigkeit: " + radius.toFixed(0) + "m)").openPopup();
+        // Kreis für die Genauigkeit zeichnen
+        L.circle(e.latlng, radius).addTo(map);
+    }
+
+    function onLocationError(e) {
+        console.log("Standort konnte nicht ermittelt werden: " + e.message);
+    }
+
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+
+    // --- MAP RESIZE FIX ---
     setTimeout(function(){ map.invalidateSize(); }, 200);
     window.addEventListener("resize", function () {
         map.invalidateSize();
     });
 
+    // --- SOCKET.IO LOGIK ---
     var socket = io();
     socket.on("update_sign", function(data) {
         document.getElementById("signText").innerText = data.sign;

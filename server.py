@@ -31,6 +31,12 @@ def login():
 # ==========================================================
 # HAUPTROUTEN (Alle zeigen jetzt auf adminmain.html)
 # ==========================================================
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 
 @app.route("/main")
 def main():
@@ -56,8 +62,6 @@ def verkehrszeichen():
 # Diese Route lassen wir für die "Vollbild"-Anzeige (z.B. für das echte Schild draußen)
 @app.route("/verkehrszeichen1")
 def verkehrszeichen1():
-    if not session.get("logged_in"):
-        return redirect(url_for("login"))
     # Falls du eine separate Datei für Vollbild hast (ohne Sidebar), lade diese hier.
     # Wenn du auch hier das Dashboard willst, ändere es zu "adminmain.html"
     return render_template("Verkehrszeichen1.html") 
