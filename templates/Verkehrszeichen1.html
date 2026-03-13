@@ -2,20 +2,76 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Anzeige – Verkehrszeichen</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
   <style>
-    html, body { height: 100%; margin: 0; padding: 0; background-color: #000; overflow: hidden; }
-    .anzeige { width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; position: relative; }
-    .status-bar { position: absolute; top: 8px; width: 96%; display: flex; justify-content: space-between; align-items: flex-start; z-index: 10; pointer-events: none; }
-    #clock { font-family: 'UnifrakturMaguntia', serif; font-size: clamp(16px, 3vw, 26px); color: #000; letter-spacing: 1px; }
-    #statusText { font-family: sans-serif; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-    .content-area { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding-top: 35px; box-sizing: border-box; }
-    #signImage { display: none; max-width: 98%; max-height: 90%; width: auto; height: auto; object-fit: contain; }
-    .animate-fade { animation: smoothFade 0.6s ease-out; }
-    @keyframes smoothFade { 0% { opacity: 0; transform: scale(0.97); } 100% { opacity: 1; transform: scale(1); } }
+    /* 1. Reset: Verhindert jegliches Scrollen oder Ränder */
+    * { box-sizing: border-box; }
+    html, body { 
+        height: 100%; 
+        width: 100%;
+        margin: 0; 
+        padding: 0; 
+        background-color: #000; 
+        overflow: hidden; 
+    }
+
+    /* 2. Container: Nimmt immer exakt den ganzen Bildschirm ein */
+    .anzeige { 
+        width: 100vw; 
+        height: 100vh; 
+        display: flex; 
+        flex-direction: column; 
+        background: #fff; 
+        position: relative; 
+    }
+
+    /* 3. Status-Bar: Fixiert oben, damit sie keinen Platz wegnimmt */
+    .status-bar { 
+        position: absolute; 
+        top: 10px; 
+        left: 2%;
+        width: 96%; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        z-index: 10; 
+        pointer-events: none; 
+    }
+
+    #clock { 
+        font-family: 'UnifrakturMaguntia', serif; 
+        font-size: clamp(14px, 4vh, 30px); /* Skaliert mit der Bildschirmhöhe */
+        color: #000; 
+    }
+
+    #statusText { 
+        font-family: sans-serif; 
+        font-size: 10px; 
+        font-weight: bold; 
+    }
+
+    /* 4. Content-Area: Füllt das gesamte Fenster */
+    .content-area { 
+        flex-grow: 1;
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        padding: 5vh; /* 5% Abstand vom Rand für Ästhetik */
+    }
+
+    /* 5. Das Bild: "contain" sorgt dafür, dass es nie abgeschnitten wird */
+    #signImage { 
+        display: none; 
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Wichtig: Bild wird skaliert, behält aber Proportionen */
+    }
+
+    .animate-fade { animation: smoothFade 0.4s ease-out; }
+    @keyframes smoothFade { 0% { opacity: 0; } 100% { opacity: 1; } }
   </style>
 </head>
 <body>
@@ -24,15 +80,31 @@
         <div id="statusText" style="color: red;">OFFLINE</div>
         <div id="clock">00:00:00</div>
     </div>
-    <div class="content-area"><img id="signImage" src="" alt="Schild" /></div>
+    <div class="content-area">
+        <img id="signImage" src="" alt="Schild" />
+    </div>
   </div>
+  
   <script>
+    // Uhrzeit-Logik
     function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString('de-DE'); }
-    setInterval(updateClock, 1000); updateClock();
-    const socket = io();
+    setInterval(updateClock, 1000); 
+    updateClock();
+
+    // Socket.IO Logik
+    const socket = io({ transports: ["websocket"] }); // Stabiler über ngrok
     const imageDisplay = document.getElementById("signImage");
-    socket.on("connect", () => { document.getElementById("statusText").innerText = "ONLINE"; document.getElementById("statusText").style.color = "#00c851"; });
-    socket.on("disconnect", () => { document.getElementById("statusText").innerText = "OFFLINE"; document.getElementById("statusText").style.color = "red"; });
+
+    socket.on("connect", () => { 
+        document.getElementById("statusText").innerText = "ONLINE"; 
+        document.getElementById("statusText").style.color = "#00c851"; 
+    });
+
+    socket.on("disconnect", () => { 
+        document.getElementById("statusText").innerText = "OFFLINE"; 
+        document.getElementById("statusText").style.color = "red"; 
+    });
+
     socket.on("update_sign", function (data) {
       const signImages = {
         "STOP": "/static/signs/stop_schild.png",
@@ -41,12 +113,16 @@
         "Achtung Baustelle": "/static/signs/baustelle_schild.png",
         "Freie Fahrt": "/static/signs/freifahrt_schild.png"
       };
+
       if (data.sign && signImages[data.sign]) {
         imageDisplay.classList.remove("animate-fade");
-        imageDisplay.style.display = "none";
         imageDisplay.src = signImages[data.sign];
-        setTimeout(() => { imageDisplay.style.display = "block"; imageDisplay.classList.add("animate-fade"); }, 30);
-      } else { imageDisplay.style.display = "none"; }
+        imageDisplay.style.display = "block";
+        // Kurzer Delay für die Animation
+        setTimeout(() => { imageDisplay.classList.add("animate-fade"); }, 10);
+      } else { 
+        imageDisplay.style.display = "none"; 
+      }
     });
   </script>
 </body>
