@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Anzeige – Verkehrszeichen</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/live_sign.css') }}">
+</head>
+<body>
+  <div class="display-root">
+    <div class="status-bar">
+        <div id="statusText" style="color: red;">OFFLINE</div>
+        <div id="clock">00:00:00</div>
+    </div>
+    <div class="content-area">
+        <img id="signImage" src="" alt="Schild" />
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/shared_socket.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/live_sign.js') }}"></script>
+</body>
+</html>

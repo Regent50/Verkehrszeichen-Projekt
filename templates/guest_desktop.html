@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kundenansicht – Verkehrssystem</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/guest_desktop.css') }}">
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+</head>
+<body>
+<div class="page">
+    <aside class="sidebar">
+        <div class="card brand-card">
+            <div class="brand-title">Traffic View</div>
+            <div class="brand-subtitle">Live Übersicht für Kunden und Besucher</div>
+            <div class="status-pill" id="system-status">System verbindet...</div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">Umweltwerte</div>
+            <div class="metric-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Helligkeit (UV)</div>
+                    <div class="metric-value" id="uv-value">--</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Druck</div>
+                    <div class="metric-value" id="druck-value">--</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Temperatur</div>
+                    <div class="metric-value" id="temp-value">--</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Luftfeuchtigkeit</div>
+                    <div class="metric-value" id="lf-value">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">Letzte Daten</div>
+            <div class="metric-label">Letztes Update</div>
+            <div class="metric-value metric-small" id="last-update">noch keines</div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">Navigation</div>
+            <div class="sidebar-buttons">
+                <button onclick="focusOnUser()">Zu meinem Standort</button>
+                <button onclick="focusOnSystem()">Zum System</button>
+                <button onclick="fitAllMarkers()">Alles anzeigen</button>
+                <button onclick="window.location.href='/guest-mobile'">Handy Ansicht</button>
+                <button onclick="window.location.href='/'">Zurück zu Login</button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="content">
+        <div id="ui-message" class="message-box"></div>
+
+        <section class="top-banner">
+            <div class="card banner-main">
+                <div class="banner-headline">Live Verkehrsinformationen</div>
+                <div class="banner-text">
+                    Diese Kundenansicht zeigt die aktuelle Systemlage, Sensorwerte und die Positionen auf der Karte.
+                    Die Oberfläche ist nur zur Beobachtung gedacht und ändert sich live mit dem Server.
+                </div>
+            </div>
+
+            <div class="card small-info">
+                <div class="small-info-title">Aktuelles Zeichen</div>
+                <div class="small-info-value" id="current-sign">Keines</div>
+            </div>
+
+            <div class="card small-info">
+                <div class="small-info-title">Live Geräte</div>
+                <div class="small-info-value" id="device-count">3</div>
+            </div>
+        </section>
+
+        <section class="middle-row">
+            <div class="card">
+                <div class="section-title">Verkehrslage</div>
+                <div class="traffic-status-grid">
+                    <div class="traffic-item">
+                        <div class="traffic-name">Innenstadt</div>
+                        <div class="traffic-desc">Normale Auslastung, freie Hauptachsen</div>
+                    </div>
+                    <div class="traffic-item">
+                        <div class="traffic-name">Baustellenbereich</div>
+                        <div class="traffic-desc">Temporäre Umleitung aktiv</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-title">Systeminfo</div>
+                <div class="traffic-status-grid">
+                    <div class="traffic-item">
+                        <div class="traffic-name">Verbindung</div>
+                        <div class="traffic-desc" id="socket-text">verbinde mit Server...</div>
+                    </div>
+                    <div class="traffic-item">
+                        <div class="traffic-name">Anzeigezustand</div>
+                        <div class="traffic-desc" id="sign-state-text">warte auf Daten</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-title">Heute</div>
+                <div class="traffic-status-grid">
+                    <div class="traffic-item">
+                        <div class="traffic-name">Live Karte</div>
+                        <div class="traffic-desc">Standorte, Marker und Umgebung sichtbar</div>
+                    </div>
+                    <div class="traffic-item">
+                        <div class="traffic-name">Live Sensoren</div>
+                        <div class="traffic-desc">Werte werden direkt vom System übernommen</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="map-section">
+            <div class="card map-card">
+                <div class="section-title">Interaktive Karte</div>
+                <div id="map"></div>
+            </div>
+
+            <div class="card list-card">
+                <div class="section-title">Standorte</div>
+                <div class="device-list">
+                    <div class="device-item">
+                        <div class="device-top">
+                            <div class="device-name">Hauptsystem</div>
+                            <div class="device-badge">Live</div>
+                        </div>
+                        <div class="device-meta">Zentrale Anzeige und Steuerung<br>Aktuelles Zeichen: <span id="device-sign-label">Keines</span></div>
+                    </div>
+
+                    <div class="device-item">
+                        <div class="device-top">
+                            <div class="device-name">Besucher</div>
+                            <div class="device-badge">Standort</div>
+                        </div>
+                        <div class="device-meta">Dein aktueller Kartenpunkt wird hier angezeigt, wenn Standort freigegeben wurde.</div>
+                    </div>
+
+                    <div class="device-item">
+                        <div class="device-top">
+                            <div class="device-name">Infopunkt</div>
+                            <div class="device-badge">Info</div>
+                        </div>
+                        <div class="device-meta">Zusätzlicher Referenzpunkt für Demo und Präsentation.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/guest_desktop.js') }}"></script>
+</body>
+</html>

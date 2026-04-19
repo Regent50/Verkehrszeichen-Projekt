@@ -1,0 +1,161 @@
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Verdana, sans-serif;
+    background: #f5f5f5;
+    color: black;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 12px;
+    background-image:
+        radial-gradient(#040000 1px, transparent 1px),
+        linear-gradient(to top, yellow, red);
+    background-size: 12px 12px, 100% 100%;
+    background-repeat: repeat, no-repeat;
+}
+
+.card {
+    width: 100%;
+    background: white;
+    border: 3px solid black;
+    border-radius: 18px;
+    padding: 12px;
+}
+
+.hero {
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.hero-text {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.4;
+}
+
+.live-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 14px;
+    border: 3px solid black;
+    border-radius: 999px;
+    background: #001f3f;
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-box {
+    border: 2px solid red;
+    border-radius: 14px;
+    background: #fafafa;
+    padding: 12px;
+    min-height: 84px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    word-break: break-word;
+}
+
+#map {
+    width: 100%;
+    height: 320px;
+    border: 3px solid black;
+    border-radius: 14px;
+}
+
+.traffic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.traffic-item {
+    border: 2px solid black;
+    border-radius: 14px;
+    background: #fafafa;
+    padding: 12px;
+}
+
+.traffic-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.traffic-desc {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.button-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.button-list button {
+    width: 100%;
+    min-height: 48px;
+    border: 3px solid black;
+    border-radius: 14px;
+    background: white;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.button-list button:active {
+    background: #ececec;
+}
+
+.message-box {
+    display: none;
+    padding: 12px;
+    border: 3px solid red;
+    border-radius: 14px;
+    background: #fff4f4;
+    color: #a00000;
+    font-weight: bold;
+    text-align: center;
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin – Desktop</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_desktop.css') }}">
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+</head>
+<body>
+<div class="background">
+    <div class="sidebar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menü</button>
+        <div class="view-badge admin-badge">Admin Ansicht</div>
+
+        <button onmouseenter="togglePanel('control-panel')">Kontrolle</button>
+        <div class="panel" id="control-panel">
+            <button data-sign="STOP" onclick="updateSign('STOP')">STOP</button>
+            <button data-sign="Geschwindigkeit 30" onclick="updateSign('Geschwindigkeit 30')">30 km/h</button>
+            <button data-sign="Geschwindigkeit 50" onclick="updateSign('Geschwindigkeit 50')">50 km/h</button>
+            <button data-sign="Achtung Baustelle" onclick="updateSign('Achtung Baustelle')">Baustelle</button>
+            <button data-sign="Freie Fahrt" onclick="updateSign('Freie Fahrt')">Freie Fahrt</button>
+        </div>
+
+        <button onmouseenter="togglePanel('view-panel')">Ansichten</button>
+        <div class="panel" id="view-panel">
+            <button onclick="window.location.href='/admin'">Desktop</button>
+            <button onclick="window.location.href='/admin-mobile'">Handy</button>
+            <button onclick="window.location.href='/live-sign'">Live Schild</button>
+        </div>
+
+        <div class="sidebar-sensors">
+            <div class="sidebar-sensors-title">Sensor Daten</div>
+
+            <div class="sidebar-sensors-status">
+                <div class="status-box">Server: <span id="server-status">verbindet...</span></div>
+                <div class="status-box">Letztes Update: <span id="last-update">noch keines</span></div>
+            </div>
+
+            <div class="sensor-bar">
+                <div class="sensor-box">
+                    <div class="sensor-title">Helligkeit (UV)</div>
+                    <div class="sensor-value" id="uv-value">wartet auf Wert</div>
+                </div>
+                <div class="sensor-box">
+                    <div class="sensor-title">Druck</div>
+                    <div class="sensor-value" id="druck-value">wartet auf Wert</div>
+                </div>
+                <div class="sensor-box">
+                    <div class="sensor-title">Temperatur</div>
+                    <div class="sensor-value" id="temp-value">wartet auf Wert</div>
+                </div>
+                <div class="sensor-box">
+                    <div class="sensor-title">Luftfeuchtigkeit</div>
+                    <div class="sensor-value" id="lf-value">wartet auf Wert</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <button onclick="console.log('Placeholder klick')">Placeholder</button>
+            <button onclick="window.location.href='/logout'">Zurück zu Login</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <div id="ui-message"></div>
+        <div class="main-panels">
+            <div class="display-box">
+                <div id="signText">Warte auf Signal...</div>
+                <img id="signImage" src="" alt="VZ">
+            </div>
+
+            <div class="map-box">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/shared_socket.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin_desktop.js') }}"></script>
+</body>
+</html>
