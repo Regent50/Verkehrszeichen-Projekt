@@ -5,120 +5,182 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LOGIN</title>
     <style>
-        /* Stil für die gesamte Seite */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
             margin: 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
-
-        #login-page {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        h2 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-
-        /* Stil für die Eingabefelder */
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
+            background:
+                radial-gradient(#111 1px, transparent 1px),
+                linear-gradient(135deg, #ffe600, #ff5e00);
+            background-size: 14px 14px, 100% 100%;
+            padding: 20px;
             box-sizing: border-box;
         }
-
+        #login-page {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid black;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        h2 {
+            color: #111;
+            font-size: 30px;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 24px;
+        }
+        input {
+            width: 100%;
+            padding: 13px;
+            margin: 10px 0;
+            border: 2px solid #bbb;
+            border-radius: 12px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
         input:focus {
-            border-color: #4CAF50;
+            border-color: #001f3f;
             outline: none;
         }
-
-        /* Stil für den Login-Button */
-        button[type="submit"] {
-            width: 100%;
-            padding: 12px;
-            background-color: #001f3f;
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #001f3f;
-        }
-
-        /* Stil für den Gast-Button */
-        #guest-login {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #001f3f;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            width: 100%;
-        }
-
-        #guest-login:hover {
-            background-color: #001f3f;
-        }
-
-        /* Stil für Fehlermeldungen */
-        .error-message {
-            color: red;
-            margin-top: 10px;
+        .section-title {
+            text-align: left;
             font-size: 14px;
+            font-weight: bold;
+            margin-top: 16px;
+            margin-bottom: 10px;
+            color: #222;
         }
-
+        .view-choice {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .view-option {
+            border: 3px solid black;
+            border-radius: 16px;
+            padding: 14px 10px;
+            background: #fafafa;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
+        }
+        .view-option:hover {
+            background: #f0f0f0;
+            transform: translateY(-1px);
+        }
+        .view-option.active {
+            background: #001f3f;
+            color: white;
+        }
+        .view-option .icon {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .view-option .label {
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .view-option .desc {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        button[type="submit"], #guest-login {
+            width: 100%;
+            padding: 13px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 3px solid black;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            background-color: #001f3f;
+            color: white;
+            margin-top: 6px;
+        }
+        button[type="submit"]:hover { opacity: 0.95; }
+        #guest-login {
+            margin-top: 14px;
+            background-color: white;
+            color: black;
+        }
+        #guest-login:hover { background-color: #f2f2f2; }
+        .error-message {
+            color: #c40000;
+            margin-top: 14px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        @media (max-width: 420px) {
+            #login-page { padding: 22px 18px; }
+            .view-choice { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
     <div id="login-page">
         <h2>LOGIN</h2>
+        <div class="subtitle">Melde dich an und wähle danach deine Ansicht</div>
 
-<form method="POST">
-    <input type="text" name="username" placeholder="Benutzername">
-    <input type="password" name="password" placeholder="Passwort">
-    <button type="submit">Einloggen</button>
-</form>
+        <form method="POST">
+            <input type="text" name="username" placeholder="Benutzername" required>
+            <input type="password" name="password" placeholder="Passwort" required>
 
-        <!-- Guest Button -->
+            <div class="section-title">Ansicht auswählen</div>
+
+            <div class="view-choice">
+                <div class="view-option active" onclick="setView('desktop', this)">
+                    <span class="icon">🖥️</span>
+                    <div class="label">PC</div>
+                    <div class="desc">volle Desktop Ansicht</div>
+                </div>
+
+                <div class="view-option" onclick="setView('mobile', this)">
+                    <span class="icon">📱</span>
+                    <div class="label">Handy</div>
+                    <div class="desc">kompakte mobile Ansicht</div>
+                </div>
+            </div>
+
+            <input type="hidden" name="view_mode" id="view_mode" value="desktop">
+
+            <button type="submit">Einloggen</button>
+        </form>
+
         <button id="guest-login" onclick="loginAsGuest()">Als Gast anmelden</button>
 
-        <!-- Fehlermeldung -->
-       <!-- {% if error %}
-        <div class="error-message">
-           Falscher Benutzername oder Passwort
-        </div>
-        {% endif %}-->
+        {% if error %}
+        <div class="error-message">Falscher Benutzername oder Passwort</div>
+        {% endif %}
     </div>
 
     <script>
+        function setView(mode, element) {
+            document.getElementById("view_mode").value = mode;
+            document.querySelectorAll(".view-option").forEach(function(option) {
+                option.classList.remove("active");
+            });
+            element.classList.add("active");
+        }
+
         function loginAsGuest() {
-            // Hier können wir ein Formular absenden oder den Benutzer auf eine andere Seite weiterleiten.
-            alert("Du bist nun als Gast eingeloggt!");
-            // Beispiel: Weiterleitung zu einer anderen Seite
-            window.location.href = "/guestm";  // Beispiel für die Weiterleitung zu einer Gästeseite
+            window.location.href = "/guest";
         }
     </script>
 </body>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kundenansicht – Mobil</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/guest_mobile.css') }}">
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+</head>
+<body>
+
+<div class="app">
+    <div class="card hero">
+        <div class="hero-title">Traffic View Mobile</div>
+        <div class="hero-text">
+            Mobile Kundenansicht mit Live-Karte, Sensorwerten und interessanten Systeminfos.
+        </div>
+        <div class="live-badge" id="system-status">System verbindet...</div>
+    </div>
+
+    <div id="ui-message" class="message-box"></div>
+
+    <div class="card">
+        <div class="title">Live Übersicht</div>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Aktuelles Zeichen</div>
+                <div class="stat-value" id="current-sign">Keines</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Letztes Update</div>
+                <div class="stat-value" id="last-update">--</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Temperatur</div>
+                <div class="stat-value" id="temp-value">--</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Luftfeuchtigkeit</div>
+                <div class="stat-value" id="lf-value">--</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">UV</div>
+                <div class="stat-value" id="uv-value">--</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Druck</div>
+                <div class="stat-value" id="druck-value">--</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="title">Karte</div>
+        <div id="map"></div>
+    </div>
+
+    <div class="card">
+        <div class="title">Highlights</div>
+        <div class="traffic-list">
+            <div class="traffic-item">
+                <div class="traffic-name">Live Marker</div>
+                <div class="traffic-desc">Systempunkt, Referenzpunkt und optional dein Standort werden gemeinsam angezeigt.</div>
+            </div>
+            <div class="traffic-item">
+                <div class="traffic-name">Direkte Sensorwerte</div>
+                <div class="traffic-desc">Die Umweltwerte kommen live aus dem System und werden hier sofort sichtbar.</div>
+            </div>
+            <div class="traffic-item">
+                <div class="traffic-name">Kundenansicht</div>
+                <div class="traffic-desc">Ohne Steuerung, nur Beobachtung. Geeignet für Besucher, Demo und Präsentation.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="title">Aktionen</div>
+        <div class="button-list">
+            <button onclick="focusOnUser()">Zu meinem Standort</button>
+            <button onclick="focusOnSystem()">Zum System</button>
+            <button onclick="fitAllMarkers()">Alles anzeigen</button>
+            <button onclick="window.location.href='/guest-desktop'">PC Ansicht</button>
+            <button onclick="window.location.href='/'">Zurück zu Login</button>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/guest_mobile.js') }}"></script>
+</body>
+</html>

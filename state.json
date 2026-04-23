@@ -1,0 +1,9 @@
+{
+  "current_sign": "STOP",
+  "current_sensor_data": {
+    "uv": null,
+    "druck": null,
+    "temperatur": null,
+    "luftfeuchtigkeit": null
+  }
+}
