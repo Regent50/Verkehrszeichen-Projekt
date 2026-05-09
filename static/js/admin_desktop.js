@@ -1,23 +1,45 @@
-let activePanel = null;
-
-function togglePanel(panelId) {
+function togglePanel(panelId, triggerButton) {
     const panel = document.getElementById(panelId);
-
-    if (activePanel === panel) {
-        return;
-    }
+    const willOpen = !panel.classList.contains("open");
 
     document.querySelectorAll(".panel").forEach(function (p) {
         p.classList.remove("open");
     });
 
-    panel.classList.add("open");
-    activePanel = panel;
+    document.querySelectorAll(".section-toggle").forEach(function (btn) {
+        btn.classList.remove("open");
+    });
+
+    sidebarElement.classList.remove("has-open-panel");
+
+    if (willOpen) {
+        panel.classList.add("open");
+        if (triggerButton) {
+            triggerButton.classList.add("open");
+        }
+        sidebarElement.classList.add("has-open-panel");
+    }
 }
 
-function toggleSidebar() {
-    const sidebar = document.querySelector(".sidebar");
-    sidebar.classList.toggle("collapsed");
+const sidebarElement = document.getElementById("sidebar");
+const sidebarOpenButton = document.getElementById("sidebar-open-button");
+
+function openSidebar() {
+    sidebarElement.classList.remove("hidden");
+    sidebarOpenButton.classList.add("hidden");
+    sidebarElement.classList.remove("has-open-panel");
+    setTimeout(function () {
+        map.invalidateSize();
+    }, 260);
+}
+
+function closeSidebar() {
+    sidebarElement.classList.add("hidden");
+    sidebarElement.classList.remove("has-open-panel");
+    sidebarOpenButton.classList.remove("hidden");
+    setTimeout(function () {
+        map.invalidateSize();
+    }, 260);
 }
 
 function updateSign(sign) {
@@ -40,44 +62,13 @@ function updateSign(sign) {
     });
 }
 
-const map = L.map("map").setView([52.52, 13.40], 12);
-
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors"
-}).addTo(map);
-
-const deviceMarker = L.marker([52.52, 13.40]).addTo(map);
-deviceMarker.bindPopup("Verkehrszeichen Gerät");
-
-map.locate({ setView: true, maxZoom: 16 });
-
-function onLocationFound(e) {
-    const radius = e.accuracy / 2;
-
-    L.marker(e.latlng).addTo(map)
-        .bindPopup("Du bist hier (Genauigkeit: " + radius.toFixed(0) + "m)")
-        .openPopup();
-
-    L.circle(e.latlng, radius).addTo(map);
-
-    const bounds = L.latLngBounds([e.latlng, deviceMarker.getLatLng()]);
-    map.fitBounds(bounds, { padding: [30, 30] });
-}
-
-function onLocationError(e) {
-    console.log("Standort konnte nicht ermittelt werden: " + e.message);
-}
-
-map.on("locationfound", onLocationFound);
-map.on("locationerror", onLocationError);
-
-setTimeout(function () {
-    map.invalidateSize();
-}, 200);
-
-window.addEventListener("resize", function () {
-    map.invalidateSize();
+const mapController = SharedSocket.createRealMap({
+    mapId: "map",
+    statusElement: document.getElementById("map-status"),
+    messageHelpers: null,
+    userLabel: "Browser-Standort"
 });
+const map = mapController.map;
 
 const socket = io();
 
@@ -89,27 +80,25 @@ const tempValue = document.getElementById("temp-value");
 const lfValue = document.getElementById("lf-value");
 const serverStatus = document.getElementById("server-status");
 const lastUpdate = document.getElementById("last-update");
+const sensorFreshness = document.getElementById("sensor-freshness");
 const uiMessage = document.getElementById("ui-message");
 
 const messageHelpers = SharedSocket.createMessageHelpers(uiMessage);
-
-const resetSensorTimeout = SharedSocket.createSensorTimeout(function () {
-    uvValue.innerText = "keine aktuellen Daten";
-    druckValue.innerText = "keine aktuellen Daten";
-    tempValue.innerText = "keine aktuellen Daten";
-    lfValue.innerText = "keine aktuellen Daten";
-    lastUpdate.innerText = "abgelaufen";
-    messageHelpers.show("Keine aktuellen Sensordaten");
-}, 15000);
+const sensorState = SharedSocket.createSensorState({
+    lastUpdateElement: lastUpdate,
+    freshnessElement: sensorFreshness,
+    messageHelpers: messageHelpers,
+    staleDelay: 45000
+});
 
 socket.on("connect", function () {
     serverStatus.innerText = "verbunden";
-    messageHelpers.hide();
+    sensorState.markConnected();
 });
 
 socket.on("disconnect", function () {
     serverStatus.innerText = "getrennt";
-    messageHelpers.show("Verbindung zum Server getrennt");
+    sensorState.markDisconnected();
 });
 
 socket.on("update_sign", function (data) {
@@ -121,10 +110,7 @@ socket.on("update_sign", function (data) {
 });
 
 socket.on("sensor_data", function (data) {
-    lastUpdate.innerText = new Date().toLocaleTimeString("de-DE");
-    messageHelpers.hide();
-    resetSensorTimeout();
-    SharedSocket.applySensors(data, {
+    sensorState.handleIncoming(data, {
         uv: uvValue,
         druck: druckValue,
         temperatur: tempValue,
@@ -132,6 +118,10 @@ socket.on("sensor_data", function (data) {
     });
 });
 
-if (window.innerWidth <= 1100) {
-    document.querySelector(".sidebar").classList.add("collapsed");
-}
+window.addEventListener("load", function () {
+    if (window.innerWidth <= 1100) {
+        closeSidebar();
+    } else {
+        openSidebar();
+    }
+});

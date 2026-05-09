@@ -13,12 +13,22 @@
 </head>
 <body>
 <div class="app">
-    <div class="card view-badge">Admin Mobile Ansicht</div>
+    <div class="hero-card">
+        <div class="hero-badge">Admin Mobile</div>
+        <h1>Leitstand unterwegs</h1>
+        <p>Schilder schalten, Sensorstatus prüfen und die Live-Karte direkt am Handy sehen.</p>
+    </div>
 
     <div id="ui-message"></div>
 
     <div class="card">
-        <div class="title">Verkehrszeichen</div>
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">Aktive Anzeige</div>
+                <div class="title">Verkehrszeichen</div>
+            </div>
+            <div class="status-chip" id="socket-status">Server verbindet...</div>
+        </div>
         <div class="sign-box">
             <div id="signText">Warte auf Signal...</div>
             <img id="signImage" src="" alt="Verkehrszeichen">
@@ -26,12 +36,23 @@
     </div>
 
     <div class="card map-card">
-        <div class="title">Karte</div>
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">Standort</div>
+                <div class="title">Karte</div>
+            </div>
+            <div class="status-chip" id="map-status">Suche echte Punkte...</div>
+        </div>
         <div id="map"></div>
     </div>
 
     <div class="card">
-        <div class="title">Kontrolle</div>
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">Steuerung</div>
+                <div class="title">Verkehrszeichen wählen</div>
+            </div>
+        </div>
         <div class="button-grid" id="sign-buttons">
             <button data-sign="STOP" onclick="updateSign('STOP')">STOP</button>
             <button data-sign="Geschwindigkeit 30" onclick="updateSign('Geschwindigkeit 30')">30 km/h</button>
@@ -42,7 +63,16 @@
     </div>
 
     <div class="card">
-        <div class="title">Sensor Daten</div>
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">Telemetrie</div>
+                <div class="title">Sensorstatus</div>
+            </div>
+        </div>
+        <div class="status-summary">
+            <div class="mini-status-box">Letztes Update: <span id="last-update">noch keines</span></div>
+            <div class="mini-status-box">Status: <span id="sensor-freshness">warte auf erste Daten</span></div>
+        </div>
         <div class="sensor-list">
             <div class="sensor-box">
                 <div class="sensor-title">Helligkeit (UV)</div>
@@ -63,20 +93,18 @@
         </div>
     </div>
 
-    <div class="card status-box" id="socket-status">
-        Server Status: verbindet...
-    </div>
-
-    <div class="card status-box">
-        Letztes Update: <span id="last-update">noch keines</span>
-    </div>
-
     <div class="card">
-        <div class="title">Seiten</div>
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">Navigation</div>
+                <div class="title">Seiten</div>
+            </div>
+        </div>
         <div class="bottom-buttons">
-            <button onclick="window.location.href='/admin'">PC Ansicht</button>
-            <button onclick="window.location.href='/live-sign'">Live Schild</button>
-            <button onclick="window.location.href='/logout'">Zurück zu Login</button>
+            <a class="nav-link" href="/admin">PC Ansicht</a>
+            <a class="nav-link" href="/live-sign">Live Schild</a>
+            <a class="nav-link" href="/guest">Gast Auswahl</a>
+            <a class="nav-link logout-link" href="/logout">Zurück zu Login</a>
         </div>
     </div>
 </div>

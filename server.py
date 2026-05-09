@@ -3,10 +3,12 @@ from flask_socketio import SocketIO, emit
 import os
 import json
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 app = Flask(
     __name__,
-    template_folder=os.path.abspath("templates"),
-    static_folder=os.path.abspath("static")
+    template_folder=os.path.join(BASE_DIR, "templates"),
+    static_folder=os.path.join(BASE_DIR, "static")
 )
 
 app.secret_key = "geheimes_passwort"
@@ -15,7 +17,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 USERNAME = "htl"
 PASSWORD = "5AHEL"
 
-STATE_FILE = "state.json"
+STATE_FILE = os.path.join(BASE_DIR, "state.json")
 
 current_sign = None
 current_sensor_data = {
@@ -96,9 +98,9 @@ def login():
                 return redirect(url_for("admin_mobile"))
             return redirect(url_for("admin_desktop"))
 
-        return render_template("login.html", error=True)
+        return render_template("LOGIN.html", error=True)
 
-    return render_template("login.html", error=False)
+    return render_template("LOGIN.html", error=False)
 
 
 @app.route("/admin")

@@ -13,73 +13,136 @@
 </head>
 <body>
 <div class="background">
-    <div class="sidebar">
-        <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menü</button>
-        <div class="view-badge admin-badge">Admin Ansicht</div>
+    <button class="sidebar-open-button" id="sidebar-open-button" type="button" onclick="openSidebar()">☰ Menü</button>
 
-        <button onmouseenter="togglePanel('control-panel')">Kontrolle</button>
-        <div class="panel" id="control-panel">
-            <button data-sign="STOP" onclick="updateSign('STOP')">STOP</button>
-            <button data-sign="Geschwindigkeit 30" onclick="updateSign('Geschwindigkeit 30')">30 km/h</button>
-            <button data-sign="Geschwindigkeit 50" onclick="updateSign('Geschwindigkeit 50')">50 km/h</button>
-            <button data-sign="Achtung Baustelle" onclick="updateSign('Achtung Baustelle')">Baustelle</button>
-            <button data-sign="Freie Fahrt" onclick="updateSign('Freie Fahrt')">Freie Fahrt</button>
+    <aside class="sidebar" id="sidebar">
+        <button class="sidebar-close-button" type="button" onclick="closeSidebar()">✕ Schließen</button>
+
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-badge">Admin</div>
+            <h2>Leitstand</h2>
+            <p>Steuerung, Ansicht und Daten auf einen Blick.</p>
         </div>
 
-        <button onmouseenter="togglePanel('view-panel')">Ansichten</button>
-        <div class="panel" id="view-panel">
-            <button onclick="window.location.href='/admin'">Desktop</button>
-            <button onclick="window.location.href='/admin-mobile'">Handy</button>
-            <button onclick="window.location.href='/live-sign'">Live Schild</button>
-        </div>
-
-        <div class="sidebar-sensors">
-            <div class="sidebar-sensors-title">Sensor Daten</div>
-
-            <div class="sidebar-sensors-status">
-                <div class="status-box">Server: <span id="server-status">verbindet...</span></div>
-                <div class="status-box">Letztes Update: <span id="last-update">noch keines</span></div>
-            </div>
-
-            <div class="sensor-bar">
-                <div class="sensor-box">
-                    <div class="sensor-title">Helligkeit (UV)</div>
-                    <div class="sensor-value" id="uv-value">wartet auf Wert</div>
-                </div>
-                <div class="sensor-box">
-                    <div class="sensor-title">Druck</div>
-                    <div class="sensor-value" id="druck-value">wartet auf Wert</div>
-                </div>
-                <div class="sensor-box">
-                    <div class="sensor-title">Temperatur</div>
-                    <div class="sensor-value" id="temp-value">wartet auf Wert</div>
-                </div>
-                <div class="sensor-box">
-                    <div class="sensor-title">Luftfeuchtigkeit</div>
-                    <div class="sensor-value" id="lf-value">wartet auf Wert</div>
-                </div>
+        <div class="sidebar-group-label">Schilder steuern</div>
+        <div class="sidebar-section">
+            <button class="section-toggle open" type="button" onclick="togglePanel('control-panel', this)">
+                <span>Verkehrszeichen auswählen</span>
+                <span class="section-toggle-icon">▾</span>
+            </button>
+            <div class="panel open" id="control-panel">
+                <button data-sign="STOP" onclick="updateSign('STOP')">STOP</button>
+                <button data-sign="Geschwindigkeit 30" onclick="updateSign('Geschwindigkeit 30')">30 km/h</button>
+                <button data-sign="Geschwindigkeit 50" onclick="updateSign('Geschwindigkeit 50')">50 km/h</button>
+                <button data-sign="Achtung Baustelle" onclick="updateSign('Achtung Baustelle')">Baustelle</button>
+                <button data-sign="Freie Fahrt" onclick="updateSign('Freie Fahrt')">Freie Fahrt</button>
             </div>
         </div>
 
+        <div class="sidebar-group-label">Ansichten</div>
+        <div class="sidebar-section">
+            <button class="section-toggle" type="button" onclick="togglePanel('view-panel', this)">
+                <span>Ansichten wechseln</span>
+                <span class="section-toggle-icon">▾</span>
+            </button>
+            <div class="panel" id="view-panel">
+                <a class="nav-button active-view" href="/admin">Admin Desktop</a>
+                <a class="nav-button" href="/admin-mobile">Admin Handy</a>
+                <a class="nav-button" href="/live-sign">Live Schild</a>
+                <a class="nav-button" href="/guest">Gast Auswahl</a>
+            </div>
+        </div>
+
+        <div class="sidebar-group-label">Tools</div>
         <div class="sidebar-footer">
-            <button onclick="console.log('Placeholder klick')">Placeholder</button>
-            <button onclick="window.location.href='/logout'">Zurück zu Login</button>
+            <a class="tool-link" href="/get-current-sign">Aktuelles Schild (JSON)</a>
+            <a class="tool-link" href="/get-sensor-data">Sensordaten (JSON)</a>
+            <a class="tool-link logout-button" href="/logout">Zurück zu Login</a>
         </div>
-    </div>
+    </aside>
 
-    <div class="content">
+    <main class="content">
+        <div class="page-header">
+            <div class="page-header-copy">
+                <div class="eyebrow">Dynamische Verkehrszeichen</div>
+                <h1>Admin Dashboard</h1>
+                <p>Schilder schalten, Sensordaten prüfen und den Standort gleichzeitig überwachen.</p>
+            </div>
+
+            <div class="header-actions">
+                <a class="header-action-link primary" href="/live-sign">Live Schild öffnen</a>
+                <a class="header-action-link" href="/guest">Gastansicht öffnen</a>
+            </div>
+        </div>
+
         <div id="ui-message"></div>
-        <div class="main-panels">
-            <div class="display-box">
-                <div id="signText">Warte auf Signal...</div>
-                <img id="signImage" src="" alt="VZ">
-            </div>
 
-            <div class="map-box">
-                <div id="map"></div>
-            </div>
+        <div class="main-panels">
+            <section class="display-column">
+                <div class="display-box card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-eyebrow">Aktive Anzeige</div>
+                            <h3>Verkehrszeichen</h3>
+                        </div>
+                        <div class="card-pill">Live</div>
+                    </div>
+
+                    <div class="sign-stage">
+                        <div id="signText">Warte auf Signal...</div>
+                        <img id="signImage" src="" alt="VZ">
+                    </div>
+                </div>
+
+                <div class="sensor-section card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-eyebrow">Telemetrie</div>
+                            <h3>Sensorstatus</h3>
+                        </div>
+                    </div>
+
+                    <div class="sensor-status-row">
+                        <div class="status-box">Server: <span id="server-status">verbindet...</span></div>
+                        <div class="status-box">Letztes Update: <span id="last-update">noch keines</span></div>
+                        <div class="status-box">Sensorstatus: <span id="sensor-freshness">warte auf erste Daten</span></div>
+                    </div>
+
+                    <div class="sensor-bar">
+                        <div class="sensor-box uv-box">
+                            <div class="sensor-title">Helligkeit (UV)</div>
+                            <div class="sensor-value" id="uv-value">wartet auf Wert</div>
+                        </div>
+                        <div class="sensor-box druck-box">
+                            <div class="sensor-title">Druck</div>
+                            <div class="sensor-value" id="druck-value">wartet auf Wert</div>
+                        </div>
+                        <div class="sensor-box temp-box">
+                            <div class="sensor-title">Temperatur</div>
+                            <div class="sensor-value" id="temp-value">wartet auf Wert</div>
+                        </div>
+                        <div class="sensor-box lf-box">
+                            <div class="sensor-title">Luftfeuchtigkeit</div>
+                            <div class="sensor-value" id="lf-value">wartet auf Wert</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="map-card card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-eyebrow">Standort</div>
+                        <h3>Karte</h3>
+                    </div>
+                    <div class="card-pill card-pill-light" id="map-status">Suche echte Punkte...</div>
+                </div>
+                <div class="map-frame">
+                    <div id="map"></div>
+                </div>
+            </section>
         </div>
-    </div>
+    </main>
 </div>
 
 <script src="{{ url_for('static', filename='js/shared_socket.js') }}"></script>

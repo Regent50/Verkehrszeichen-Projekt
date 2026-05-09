@@ -2,8 +2,8 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: Verdana, sans-serif;
-    background: #f5f5f5;
-    color: black;
+    background: #edf2f7;
+    color: #16202a;
 }
 
 * {
@@ -18,63 +18,116 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding: 12px;
-    background-image:
-        radial-gradient(#040000 1px, transparent 1px),
-        linear-gradient(to top, yellow, red);
-    background-size: 12px 12px, 100% 100%;
-    background-repeat: repeat, no-repeat;
+    gap: 16px;
+    padding: clamp(12px, 2.2vw, 18px);
+    background:
+        radial-gradient(circle at top left, rgba(255, 214, 10, 0.28), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(20, 81, 160, 0.15), transparent 28%),
+        linear-gradient(180deg, #f8fbff 0%, #edf2f7 100%);
 }
 
+.hero-card,
 .card {
     width: 100%;
-    background: white;
-    border: 3px solid black;
-    border-radius: 18px;
-    padding: 12px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 24px;
+    padding: clamp(14px, 2.4vw, 18px);
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+.hero-badge,
+.eyebrow {
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1451a0;
+}
+
+.hero-card h1 {
+    margin: 10px 0 8px;
+    font-size: 30px;
+}
+
+.hero-card p {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.45;
+}
+
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
 }
 
 .title {
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 800;
+    margin-top: 4px;
 }
 
-.view-badge {
-    text-align: center;
-    font-weight: bold;
-    background: #001f3f;
-    color: white;
+.status-chip,
+.mini-status-box {
+    border-radius: 16px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #dbe3ee;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.status-chip {
+    white-space: nowrap;
+}
+
+.status-summary {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+#sensor-freshness.stale {
+    color: #b45309;
 }
 
 .sign-box {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    min-height: 280px;
+    gap: 16px;
+    min-height: 290px;
     justify-content: center;
+    border-radius: 20px;
+    padding: 14px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 #signText {
-    font-size: clamp(18px, 5vw, 24px);
-    font-weight: bold;
+    font-size: clamp(20px, 5.2vw, 28px);
+    font-weight: 800;
     text-align: center;
-    background: #f7f7f7;
-    border: 2px solid black;
-    border-radius: 12px;
-    padding: 10px 12px;
+    background: white;
+    border-radius: 16px;
+    padding: 12px 14px;
     width: 100%;
     word-break: break-word;
     line-height: 1.2;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 #signImage {
     display: none;
     width: 100%;
-    max-width: min(78vw, 300px);
+    max-width: min(82vw, 320px);
     max-height: 42vh;
     height: auto;
     object-fit: contain;
@@ -86,8 +139,8 @@ body {
 
 #map {
     width: 100%;
-    height: 300px;
-    border-radius: 12px;
+    height: min(42vh, 360px);
+    border-radius: 18px;
 }
 
 .button-grid {
@@ -97,68 +150,106 @@ body {
 }
 
 .button-grid button,
-.bottom-buttons button {
+.bottom-buttons button,
+.bottom-buttons .nav-link {
     width: 100%;
-    min-height: 48px;
+    min-height: 50px;
     padding: 12px;
-    border-radius: 14px;
-    border: 3px solid black;
+    border-radius: 16px;
+    border: none;
     background: white;
     cursor: pointer;
     text-align: center;
-    font-weight: bold;
+    font-weight: 800;
     font-size: 14px;
-    color: black;
-    transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    color: #111827;
+    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#sign-buttons button[data-sign="STOP"] {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: white;
+}
+
+#sign-buttons button[data-sign="Geschwindigkeit 30"] {
+    background: linear-gradient(135deg, #facc15, #f59e0b);
+    color: #111827;
+}
+
+#sign-buttons button[data-sign="Geschwindigkeit 50"] {
+    background: linear-gradient(135deg, #60a5fa, #2563eb);
+    color: white;
+}
+
+#sign-buttons button[data-sign="Achtung Baustelle"] {
+    background: linear-gradient(135deg, #fb923c, #ea580c);
+    color: white;
+}
+
+#sign-buttons button[data-sign="Freie Fahrt"] {
+    background: linear-gradient(135deg, #4ade80, #16a34a);
+    color: white;
 }
 
 .button-grid button:active,
-.bottom-buttons button:active {
-    background: #eaeaea;
+.bottom-buttons button:active,
+.bottom-buttons .nav-link:active {
     transform: translateY(1px);
 }
 
 .button-grid button.active-sign {
-    background-color: #001f3f;
+    background: linear-gradient(135deg, #1451a0, #0f3f80);
     color: white;
-    box-shadow: inset 0 0 0 2px white;
 }
 
 .sensor-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
 }
 
 .sensor-box {
-    border: 2px solid red;
-    border-radius: 14px;
-    background: #fafafa;
-    padding: 10px 12px;
+    border-radius: 18px;
+    padding: 14px;
+    min-height: 108px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .sensor-title {
-    font-size: 13px;
-    color: #555;
-    margin-bottom: 4px;
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
 }
 
 .sensor-value {
-    font-size: clamp(16px, 4.6vw, 20px);
-    font-weight: bold;
+    font-size: clamp(17px, 4.8vw, 22px);
+    font-weight: 800;
     word-break: break-word;
+    line-height: 1.2;
 }
 
 .bottom-buttons {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
-.status-box {
-    text-align: center;
-    font-size: 13px;
-    font-weight: bold;
+.bottom-buttons .nav-link.logout-link,
+.bottom-buttons button:last-child {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
 }
 
 #ui-message {
@@ -166,27 +257,36 @@ body {
     width: 100%;
     padding: 12px 14px;
     background: #fff4f4;
-    border: 3px solid red;
-    border-radius: 14px;
-    font-weight: bold;
+    border: 1px solid #fda4af;
+    border-radius: 16px;
+    font-weight: 700;
     color: #a00000;
     text-align: center;
 }
 
-@media (max-width: 380px) {
-    .button-grid {
+@media (max-width: 540px) {
+    .button-grid,
+    .sensor-list {
         grid-template-columns: 1fr;
     }
 
-    #signText {
-        font-size: 18px;
+    .section-head {
+        flex-direction: column;
     }
 
-    .sensor-value {
-        font-size: 16px;
+    .status-chip {
+        width: 100%;
+        white-space: normal;
+    }
+}
+
+@media (max-width: 380px) {
+    .app {
+        gap: 12px;
+        padding: 10px;
     }
 
     #map {
-        height: 260px;
+        height: 280px;
     }
 }

@@ -15,6 +15,7 @@
 
 <div class="app">
     <div class="card hero">
+        <div class="hero-badge">Gast Mobile</div>
         <div class="hero-title">Traffic View Mobile</div>
         <div class="hero-text">
             Mobile Kundenansicht mit Live-Karte, Sensorwerten und interessanten Systeminfos.
@@ -34,6 +35,10 @@
             <div class="stat-box">
                 <div class="stat-label">Letztes Update</div>
                 <div class="stat-value" id="last-update">--</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Sensorstatus</div>
+                <div class="stat-value stat-small" id="sensor-freshness">warte auf erste Daten</div>
             </div>
             <div class="stat-box">
                 <div class="stat-label">Temperatur</div>
@@ -56,6 +61,7 @@
 
     <div class="card">
         <div class="title">Karte</div>
+        <div class="map-status-badge" id="map-status">Suche echte Punkte...</div>
         <div id="map"></div>
     </div>
 
@@ -63,8 +69,8 @@
         <div class="title">Highlights</div>
         <div class="traffic-list">
             <div class="traffic-item">
-                <div class="traffic-name">Live Marker</div>
-                <div class="traffic-desc">Systempunkt, Referenzpunkt und optional dein Standort werden gemeinsam angezeigt.</div>
+                <div class="traffic-name">Echte Punkte</div>
+                <div class="traffic-desc">Die Karte zeigt nur reale/verfügbare Punkte statt erfundener Demo-Standorte.</div>
             </div>
             <div class="traffic-item">
                 <div class="traffic-name">Direkte Sensorwerte</div>
@@ -81,14 +87,15 @@
         <div class="title">Aktionen</div>
         <div class="button-list">
             <button onclick="focusOnUser()">Zu meinem Standort</button>
-            <button onclick="focusOnSystem()">Zum System</button>
-            <button onclick="fitAllMarkers()">Alles anzeigen</button>
-            <button onclick="window.location.href='/guest-desktop'">PC Ansicht</button>
-            <button onclick="window.location.href='/'">Zurück zu Login</button>
+            <button onclick="focusOnSystem()">Systemstandort prüfen</button>
+            <button onclick="fitAllMarkers()">Verfügbare Punkte anzeigen</button>
+            <a class="action-link" href="/guest-desktop">PC Ansicht</a>
+            <a class="action-link logout-link" href="/">Zurück zu Login</a>
         </div>
     </div>
 </div>
 
+<script src="{{ url_for('static', filename='js/shared_socket.js') }}"></script>
 <script src="{{ url_for('static', filename='js/guest_mobile.js') }}"></script>
 </body>
 </html>

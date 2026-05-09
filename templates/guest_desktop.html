@@ -15,6 +15,7 @@
 <div class="page">
     <aside class="sidebar">
         <div class="card brand-card">
+            <div class="brand-eyebrow">Live Beobachtung</div>
             <div class="brand-title">Traffic View</div>
             <div class="brand-subtitle">Live Übersicht für Kunden und Besucher</div>
             <div class="status-pill" id="system-status">System verbindet...</div>
@@ -44,18 +45,26 @@
 
         <div class="card">
             <div class="section-title">Letzte Daten</div>
-            <div class="metric-label">Letztes Update</div>
-            <div class="metric-value metric-small" id="last-update">noch keines</div>
+            <div class="metric-stack">
+                <div>
+                    <div class="metric-label">Letztes Update</div>
+                    <div class="metric-value metric-small" id="last-update">noch keines</div>
+                </div>
+                <div>
+                    <div class="metric-label">Sensorstatus</div>
+                    <div class="metric-value metric-small" id="sensor-freshness">warte auf erste Daten</div>
+                </div>
+            </div>
         </div>
 
         <div class="card">
             <div class="section-title">Navigation</div>
             <div class="sidebar-buttons">
                 <button onclick="focusOnUser()">Zu meinem Standort</button>
-                <button onclick="focusOnSystem()">Zum System</button>
-                <button onclick="fitAllMarkers()">Alles anzeigen</button>
-                <button onclick="window.location.href='/guest-mobile'">Handy Ansicht</button>
-                <button onclick="window.location.href='/'">Zurück zu Login</button>
+                <button onclick="focusOnSystem()">Systemstandort prüfen</button>
+                <button onclick="fitAllMarkers()">Verfügbare Punkte anzeigen</button>
+                <a class="sidebar-nav-link" href="/guest-mobile">Handy Ansicht</a>
+                <a class="sidebar-nav-link logout-link" href="/">Zurück zu Login</a>
             </div>
         </div>
     </aside>
@@ -78,58 +87,17 @@
             </div>
 
             <div class="card small-info">
-                <div class="small-info-title">Live Geräte</div>
-                <div class="small-info-value" id="device-count">3</div>
-            </div>
-        </section>
-
-        <section class="middle-row">
-            <div class="card">
-                <div class="section-title">Verkehrslage</div>
-                <div class="traffic-status-grid">
-                    <div class="traffic-item">
-                        <div class="traffic-name">Innenstadt</div>
-                        <div class="traffic-desc">Normale Auslastung, freie Hauptachsen</div>
-                    </div>
-                    <div class="traffic-item">
-                        <div class="traffic-name">Baustellenbereich</div>
-                        <div class="traffic-desc">Temporäre Umleitung aktiv</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="section-title">Systeminfo</div>
-                <div class="traffic-status-grid">
-                    <div class="traffic-item">
-                        <div class="traffic-name">Verbindung</div>
-                        <div class="traffic-desc" id="socket-text">verbinde mit Server...</div>
-                    </div>
-                    <div class="traffic-item">
-                        <div class="traffic-name">Anzeigezustand</div>
-                        <div class="traffic-desc" id="sign-state-text">warte auf Daten</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="section-title">Heute</div>
-                <div class="traffic-status-grid">
-                    <div class="traffic-item">
-                        <div class="traffic-name">Live Karte</div>
-                        <div class="traffic-desc">Standorte, Marker und Umgebung sichtbar</div>
-                    </div>
-                    <div class="traffic-item">
-                        <div class="traffic-name">Live Sensoren</div>
-                        <div class="traffic-desc">Werte werden direkt vom System übernommen</div>
-                    </div>
-                </div>
+                <div class="small-info-title">Sensorstatus</div>
+                <div class="small-info-value small-info-status" id="header-sensor-freshness">warte auf Daten</div>
             </div>
         </section>
 
         <section class="map-section">
             <div class="card map-card">
-                <div class="section-title">Interaktive Karte</div>
+                <div class="map-header">
+                    <div class="section-title">Interaktive Karte</div>
+                    <div class="map-status-badge" id="map-status">Suche echte Punkte...</div>
+                </div>
                 <div id="map"></div>
             </div>
 
@@ -149,15 +117,19 @@
                             <div class="device-name">Besucher</div>
                             <div class="device-badge">Standort</div>
                         </div>
-                        <div class="device-meta">Dein aktueller Kartenpunkt wird hier angezeigt, wenn Standort freigegeben wurde.</div>
+                        <div class="device-meta">Dein aktueller Kartenpunkt wird hier angezeigt, sobald du die Standortfreigabe erteilst.</div>
                     </div>
 
                     <div class="device-item">
                         <div class="device-top">
-                            <div class="device-name">Infopunkt</div>
-                            <div class="device-badge">Info</div>
+                            <div class="device-name">Systemstatus</div>
+                            <div class="device-badge">Live</div>
                         </div>
-                        <div class="device-meta">Zusätzlicher Referenzpunkt für Demo und Präsentation.</div>
+                        <div class="device-meta">
+                            Verbindung: <span id="socket-text">verbinde mit Server...</span><br>
+                            Anzeigezustand: <span id="sign-state-text">warte auf Daten</span><br>
+                            Kartenlogik: keine Fake-Standorte, nur echte/verfügbare Punkte
+                        </div>
                     </div>
                 </div>
             </div>
@@ -165,6 +137,7 @@
     </main>
 </div>
 
+<script src="{{ url_for('static', filename='js/shared_socket.js') }}"></script>
 <script src="{{ url_for('static', filename='js/guest_desktop.js') }}"></script>
 </body>
 </html>

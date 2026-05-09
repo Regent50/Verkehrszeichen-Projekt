@@ -5,11 +5,11 @@
 #include <SPI.h>
 
 // -------------------- WLAN --------------------
-const char* ssid = "NETGEAR-5G";
-const char* password = "suckballsNigga";
+const char* ssid = "WLAN18550058";
+const char* password = "S4S2U45xHuuy";
 
 // lokal testen:
-const char* serverUrl = "http://192.168.1.4:5000/sensor-update";
+const char* serverUrl = "http://192.168.0.178:5000/sensor-update";
 
 // -------------------- DHT11 --------------------
 #define DHTPIN 4
@@ -126,7 +126,7 @@ int readUvRaw() {
   return analogRead(UV_PIN);
 }
 
-void sendSensorData(float temperatur, float luftfeuchtigkeit, float druck, int uv) {
+void sendSensorData(bool hasDhtValues, float temperatur, float luftfeuchtigkeit, float druck, int uv) {
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WLAN weg, verbinde neu...");
     connectWifi();
@@ -139,9 +139,13 @@ void sendSensorData(float temperatur, float luftfeuchtigkeit, float druck, int u
 
     String json = "{";
     json += "\"uv\":" + String(uv) + ",";
-    json += "\"druck\":" + String(druck, 1) + ",";
-    json += "\"temperatur\":" + String(temperatur, 1) + ",";
-    json += "\"luftfeuchtigkeit\":" + String(luftfeuchtigkeit, 1);
+    json += "\"druck\":" + String(druck, 1);
+
+    if (hasDhtValues) {
+      json += ",\"temperatur\":" + String(temperatur, 1);
+      json += ",\"luftfeuchtigkeit\":" + String(luftfeuchtigkeit, 1);
+    }
+
     json += "}";
 
     Serial.println("Sende JSON:");
@@ -232,9 +236,10 @@ void loop() {
     Serial.println(uvRaw);
 
     if (!isnan(temperatur) && !isnan(luftfeuchtigkeit)) {
-      sendSensorData(temperatur, luftfeuchtigkeit, pressure, uvRaw);
+      sendSensorData(true, temperatur, luftfeuchtigkeit, pressure, uvRaw);
     } else {
-      Serial.println("DHT11 ungültig, sende trotzdem Druck und UV nicht.");
+      Serial.println("DHT11 ungültig, sende Druck und UV trotzdem.");
+      sendSensorData(false, temperatur, luftfeuchtigkeit, pressure, uvRaw);
     }
   }
 }
