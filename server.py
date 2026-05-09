@@ -46,7 +46,13 @@ def load_state():
             state = json.load(f)
 
         current_sign = state.get("current_sign")
-        current_sensor_data = state.get("current_sensor_data", current_sensor_data)
+        loaded_sensor_data = state.get("current_sensor_data", {})
+
+        current_sensor_data["uv"] = to_float_or_none(loaded_sensor_data.get("uv"))
+        current_sensor_data["druck"] = to_float_or_none(loaded_sensor_data.get("druck"))
+        current_sensor_data["temperatur"] = to_float_or_none(loaded_sensor_data.get("temperatur"))
+        current_sensor_data["luftfeuchtigkeit"] = to_float_or_none(loaded_sensor_data.get("luftfeuchtigkeit"))
+
     except Exception as e:
         print("Fehler beim Laden des Status:", e)
 
@@ -129,7 +135,6 @@ def guest_mobile():
     return render_template("guest_mobile.html")
 
 
-# Rückwärtskompatible alte Routen
 @app.route("/main")
 def main():
     return redirect(url_for("admin_desktop"))
@@ -200,21 +205,35 @@ def sensor_update():
     if not data:
         return jsonify({"status": "error", "message": "Keine Sensordaten erhalten"}), 400
 
-    current_sensor_data = {
+    new_sensor_data = {
         "uv": to_float_or_none(data.get("uv")),
         "druck": to_float_or_none(data.get("druck")),
         "temperatur": to_float_or_none(data.get("temperatur")),
         "luftfeuchtigkeit": to_float_or_none(data.get("luftfeuchtigkeit"))
     }
 
-    if all(value is None for value in current_sensor_data.values()):
+    if all(value is None for value in new_sensor_data.values()):
         return jsonify({"status": "error", "message": "Keine gültigen Sensordaten"}), 400
 
+    current_sensor_data = new_sensor_data
     save_state()
+
     print("Neue Sensordaten empfangen:", current_sensor_data)
 
     socketio.emit("sensor_data", current_sensor_data)
     return jsonify({"status": "ok", "data": current_sensor_data}), 200
+
+
+@app.route("/get-sensor-data", methods=["GET"])
+@app.route("/get_sensor_data", methods=["GET"])
+def get_sensor_data():
+    return jsonify(current_sensor_data), 200
+
+
+@app.route("/get-current-sign", methods=["GET"])
+@app.route("/get_current_sign", methods=["GET"])
+def get_current_sign():
+    return jsonify({"sign": current_sign}), 200
 
 
 @app.route("/get-image/<image_name>")
