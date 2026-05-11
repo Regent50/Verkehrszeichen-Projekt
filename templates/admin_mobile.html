@@ -58,7 +58,29 @@
             <button data-sign="Geschwindigkeit 30" onclick="updateSign('Geschwindigkeit 30')">30 km/h</button>
             <button data-sign="Geschwindigkeit 50" onclick="updateSign('Geschwindigkeit 50')">50 km/h</button>
             <button data-sign="Achtung Baustelle" onclick="updateSign('Achtung Baustelle')">Baustelle</button>
+            <button data-sign="Gefahrstelle" onclick="updateSign('Gefahrstelle')">Gefahrstelle</button>
+            <button data-sign="Achtung Glätte" onclick="updateSign('Achtung Glätte')">Achtung Glätte</button>
+            <button data-sign="Schleudergefahr" onclick="updateSign('Schleudergefahr')">Schleudergefahr</button>
             <button data-sign="Freie Fahrt" onclick="updateSign('Freie Fahrt')">Freie Fahrt</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">Automatik</div>
+                <div class="title">Sensorlogik</div>
+            </div>
+            <div class="status-chip" id="automation-mode">MANUELL</div>
+        </div>
+        <div class="mode-grid">
+            <button class="mode-button" data-mode="manual" onclick="setMode('manual')">Manuell</button>
+            <button class="mode-button" data-mode="auto" onclick="setMode('auto')">Automatik</button>
+        </div>
+        <div class="automation-note">
+            <div><strong>Regel:</strong> <span id="automation-rule">manual</span></div>
+            <div><strong>Bewertung:</strong> <span id="automation-time">noch keine</span></div>
+            <div id="automation-reason">Manuelle Steuerung aktiv.</div>
         </div>
     </div>
 

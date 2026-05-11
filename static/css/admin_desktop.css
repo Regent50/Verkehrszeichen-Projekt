@@ -180,6 +180,26 @@ button {
     padding: 12px;
 }
 
+#control-panel.open {
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+#control-panel.open::-webkit-scrollbar {
+    width: 10px;
+}
+
+#control-panel.open::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+}
+
+#control-panel.open::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+}
+
 .panel button,
 .panel .nav-button {
     width: 100%;
@@ -224,8 +244,32 @@ button {
     color: white;
 }
 
+#control-panel button[data-sign="Gefahrstelle"] {
+    background: linear-gradient(135deg, #f97316, #c2410c);
+    color: white;
+}
+
+#control-panel button[data-sign="Achtung Glätte"] {
+    background: linear-gradient(135deg, #93c5fd, #38bdf8);
+    color: #0f172a;
+}
+
+#control-panel button[data-sign="Schleudergefahr"] {
+    background: linear-gradient(135deg, #c084fc, #7c3aed);
+    color: white;
+}
+
 #control-panel button[data-sign="Freie Fahrt"] {
     background: linear-gradient(135deg, #4ade80, #16a34a);
+    color: white;
+}
+
+.panel .mode-button {
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+}
+
+.panel .mode-button.active-mode {
+    background: linear-gradient(135deg, #1451a0, #0f3f80);
     color: white;
 }
 
@@ -544,6 +588,73 @@ button {
     word-break: break-word;
 }
 
+.automation-summary {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, #f8fbff 0%, #eff6ff 100%);
+    border: 1px solid rgba(20, 81, 160, 0.12);
+}
+
+.automation-summary-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.automation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.automation-box {
+    min-width: 0;
+    padding: 14px;
+    border-radius: 18px;
+    background: white;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.automation-label {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.automation-value {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+    overflow-wrap: anywhere;
+}
+
+.automation-reason {
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: white;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    line-height: 1.45;
+    color: #334155;
+}
+
+.automation-reason.is-stale {
+    border-color: #fdba74;
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+.card-pill.auto-active {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: white;
+}
+
 .map-card {
     display: flex;
     flex-direction: column;
@@ -621,6 +732,10 @@ button {
     .header-actions,
     .sensor-status-row,
     .sensor-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .automation-grid {
         grid-template-columns: 1fr;
     }
 

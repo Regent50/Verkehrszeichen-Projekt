@@ -147,6 +147,23 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.button-grid::-webkit-scrollbar {
+    width: 10px;
+}
+
+.button-grid::-webkit-scrollbar-thumb {
+    background: rgba(20, 81, 160, 0.28);
+    border-radius: 999px;
+}
+
+.button-grid::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 999px;
 }
 
 .button-grid button,
@@ -191,9 +208,68 @@ body {
     color: white;
 }
 
+#sign-buttons button[data-sign="Gefahrstelle"] {
+    background: linear-gradient(135deg, #f97316, #c2410c);
+    color: white;
+}
+
+#sign-buttons button[data-sign="Achtung Glätte"] {
+    background: linear-gradient(135deg, #93c5fd, #38bdf8);
+    color: #0f172a;
+}
+
+#sign-buttons button[data-sign="Schleudergefahr"] {
+    background: linear-gradient(135deg, #c084fc, #7c3aed);
+    color: white;
+}
+
 #sign-buttons button[data-sign="Freie Fahrt"] {
     background: linear-gradient(135deg, #4ade80, #16a34a);
     color: white;
+}
+
+.mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.mode-button {
+    min-height: 50px;
+    padding: 12px;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    color: #0f172a;
+    font-weight: 800;
+    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
+}
+
+.mode-button.active-mode {
+    background: linear-gradient(135deg, #1451a0, #0f3f80);
+    color: white;
+}
+
+.automation-note {
+    display: grid;
+    gap: 8px;
+    padding: 14px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #f8fbff 0%, #eff6ff 100%);
+    border: 1px solid rgba(20, 81, 160, 0.12);
+    color: #334155;
+    line-height: 1.4;
+}
+
+.automation-note #automation-reason.is-stale {
+    color: #9a3412;
+}
+
+.status-chip.auto-active {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: white;
+    border-color: transparent;
 }
 
 .button-grid button:active,
@@ -266,7 +342,8 @@ body {
 
 @media (max-width: 540px) {
     .button-grid,
-    .sensor-list {
+    .sensor-list,
+    .mode-grid {
         grid-template-columns: 1fr;
     }
 

@@ -4,7 +4,10 @@ window.SharedSocket = (function () {
         "Geschwindigkeit 30": "/static/signs/schild_30.png",
         "Geschwindigkeit 50": "/static/signs/50kmh_schild.png",
         "Achtung Baustelle": "/static/signs/baustelle_schild.png",
-        "Freie Fahrt": "/static/signs/freifahrt_schild.png"
+        "Freie Fahrt": "/static/signs/freifahrt_schild.png",
+        "Gefahrstelle": "/static/signs/gefahrstelle_schild.png",
+        "Achtung Glätte": "/static/signs/glaette_schild.png",
+        "Schleudergefahr": "/static/signs/schleudergefahr_schild.png"
     };
 
     function createMessageHelpers(messageElement) {

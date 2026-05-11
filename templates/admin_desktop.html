@@ -35,7 +35,22 @@
                 <button data-sign="Geschwindigkeit 30" onclick="updateSign('Geschwindigkeit 30')">30 km/h</button>
                 <button data-sign="Geschwindigkeit 50" onclick="updateSign('Geschwindigkeit 50')">50 km/h</button>
                 <button data-sign="Achtung Baustelle" onclick="updateSign('Achtung Baustelle')">Baustelle</button>
+                <button data-sign="Gefahrstelle" onclick="updateSign('Gefahrstelle')">Gefahrstelle</button>
+                <button data-sign="Achtung Glätte" onclick="updateSign('Achtung Glätte')">Achtung Glätte</button>
+                <button data-sign="Schleudergefahr" onclick="updateSign('Schleudergefahr')">Schleudergefahr</button>
                 <button data-sign="Freie Fahrt" onclick="updateSign('Freie Fahrt')">Freie Fahrt</button>
+            </div>
+        </div>
+
+        <div class="sidebar-group-label">Automatik</div>
+        <div class="sidebar-section">
+            <button class="section-toggle" type="button" onclick="togglePanel('automation-panel', this)">
+                <span>Sensorlogik</span>
+                <span class="section-toggle-icon">▾</span>
+            </button>
+            <div class="panel" id="automation-panel">
+                <button class="mode-button" data-mode="manual" onclick="setMode('manual')">Manueller Modus</button>
+                <button class="mode-button" data-mode="auto" onclick="setMode('auto')">Automatik starten</button>
             </div>
         </div>
 
@@ -125,6 +140,27 @@
                             <div class="sensor-title">Luftfeuchtigkeit</div>
                             <div class="sensor-value" id="lf-value">wartet auf Wert</div>
                         </div>
+                    </div>
+
+                    <div class="automation-summary">
+                        <div class="automation-summary-head">
+                            <div>
+                                <div class="card-eyebrow">Automatik</div>
+                                <h3>Sensorentscheid</h3>
+                            </div>
+                            <div class="card-pill card-pill-light" id="automation-mode">MANUELL</div>
+                        </div>
+                        <div class="automation-grid">
+                            <div class="automation-box">
+                                <div class="automation-label">Regel</div>
+                                <div class="automation-value" id="automation-rule">manual</div>
+                            </div>
+                            <div class="automation-box">
+                                <div class="automation-label">Bewertung</div>
+                                <div class="automation-value" id="automation-time">noch keine</div>
+                            </div>
+                        </div>
+                        <div class="automation-reason" id="automation-reason">Manuelle Steuerung aktiv.</div>
                     </div>
                 </div>
             </section>

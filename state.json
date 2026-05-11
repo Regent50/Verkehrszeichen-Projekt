@@ -1,9 +1,19 @@
 {
-  "current_sign": "STOP",
+  "current_sign": "Achtung Baustelle",
+  "current_mode": "manual",
+  "sensor_last_update": "2026-05-11T18:39:05",
   "current_sensor_data": {
-    "uv": 1084.0,
-    "druck": 1035.5,
-    "temperatur": 23.4,
-    "luftfeuchtigkeit": 36.0
+    "uv": 1088.0,
+    "druck": 1016.7,
+    "temperatur": 23.8,
+    "luftfeuchtigkeit": 47.0
+  },
+  "automation_status": {
+    "mode": "manual",
+    "sign": "Achtung Baustelle",
+    "rule": "manual",
+    "reason": "Manuelle Steuerung aktiv",
+    "stale": false,
+    "last_evaluated": "2026-05-11T18:31:40"
   }
 }
